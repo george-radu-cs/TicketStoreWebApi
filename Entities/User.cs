@@ -6,6 +6,13 @@ namespace TicketStore.Entities
 {
     public class User : IdentityUser
     {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public override string PhoneNumber { get; set; }
+        public string PhonePrefix { get; set; }
+        public int Age { get; set; }
+        public bool IsStudent { get; set; }
+
         public ICollection<UserRole> UserRoles { get; set; }
     }
 }
