@@ -8,6 +8,10 @@ namespace TicketStore.Entities
         IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
         public TicketStoreContext(DbContextOptions<TicketStoreContext> options) : base(options) {}
-        
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
     }
 }

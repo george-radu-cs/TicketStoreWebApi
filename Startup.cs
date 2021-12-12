@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TicketStore.Entities;
+using TicketStore.Managers;
 
 namespace TicketStore
 {
@@ -52,7 +53,7 @@ namespace TicketStore
                 .AddJwtBearer("AuthScheme", options =>
                 {
                     options.SaveToken = true;
-                    var jwtSecretKey = Configuration.GetSection("Jwt").GetSection("SecretKey").Get<String>();
+                    var jwtSecretKey = Configuration.GetSection("Jwt").GetSection("SecretKey").Get<string>();
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
@@ -83,6 +84,9 @@ namespace TicketStore
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddTransient<IAuthenticationManager, AuthenticationManager>();
+            services.AddTransient<ITokenManager, TokenManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
