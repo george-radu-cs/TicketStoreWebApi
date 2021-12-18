@@ -45,7 +45,7 @@ Basic features:
  - [x] authentication
  - [ ] create all tables in db
  - [x] add authentication controller
- - [ ] add event controller
+ - [x] add event controller
  - [ ] add reviews controller
  - [ ] add ticket controller
  - [ ] relation one-to-one
@@ -61,3 +61,4 @@ To be added after ALL basic features are done and have more time left
 - [ ] add phone verification using twilio for one task above
 - [ ] send receipt to user's mail when buying tickets from site - SendGrid
 - [ ] add cron to update event status if it's to late to buy tickets (check daily)
+ 
