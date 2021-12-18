@@ -22,6 +22,7 @@ namespace TicketStore.Managers
 
         public async Task<bool> SignUp(SignUpUserModel signUpUserModel)
         {
+            var date = DateTime.Now.ToUniversalTime();
             var user = new User
             {
                 FirstName = signUpUserModel.FirstName,
@@ -30,8 +31,10 @@ namespace TicketStore.Managers
                 UserName = signUpUserModel.Email,
                 PhoneNumber = signUpUserModel.PhoneNumber,
                 PhonePrefix = signUpUserModel.PhonePrefix,
-                Age=signUpUserModel.Age,
+                Age = signUpUserModel.Age,
                 IsStudent = signUpUserModel.IsStudent,
+                CreatedAt = date,
+                UpdatedAt = date,
             };
 
             var result = await _userManager.CreateAsync(user, signUpUserModel.Password);
@@ -40,6 +43,7 @@ namespace TicketStore.Managers
                 await _userManager.AddToRoleAsync(user, signUpUserModel.RoleId);
                 return true;
             }
+
             return false;
         }
 

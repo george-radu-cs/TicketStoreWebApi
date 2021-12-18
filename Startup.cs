@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TicketStore.Entities;
 using TicketStore.Managers;
+using TicketStore.Repositories;
 
 namespace TicketStore
 {
@@ -87,6 +88,9 @@ namespace TicketStore
 
             services.AddTransient<IAuthenticationManager, AuthenticationManager>();
             services.AddTransient<ITokenManager, TokenManager>();
+
+            services.AddTransient<IEventRepository, EventRepository>();
+            services.AddTransient<IEventManager, EventManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
