@@ -47,12 +47,14 @@ Basic features:
  - [x] add authentication controller
  - [x] add event controller
  - [ ] add reviews controller
- - [ ] add ticket controller
- - [ ] relation one-to-one
- - [ ] relation one-to-many
- - [ ] relation many-to-many
+ - [x] add ticket controller
+ - [x] relation one-to-one
+ - [x] relation one-to-many
+ - [x] relation many-to-many
  - [ ] add authorization for endpoints
  - [ ] input validations for all methods
+ - [ ] add response models to now return all types of data to web
+ - [ ] change returning https codes and error messages for all endpoints
 
 To be added after ALL basic features are done and have more time left
 
