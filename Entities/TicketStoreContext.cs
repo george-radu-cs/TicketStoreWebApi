@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace TicketStore.Entities
         public DbSet<Event> Events { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<TicketTypes> EventTicketTypes { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,6 +27,18 @@ namespace TicketStore.Entities
 
             builder.Entity<Event>()
                 .HasOne(e => e.TicketTypes);
+
+            builder.Entity<Ticket>().HasKey(t => new { t.UserId, t.EventId });
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.Tickets)
+                .HasForeignKey(t => t.UserId);
+
+            builder.Entity<Ticket>()
+                .HasOne(t => t.Event)
+                .WithMany(e => e.TicketsSold)
+                .HasForeignKey(t => t.EventId);
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TicketStore.Entities
 {
-    public sealed class Event
+    public class Event
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
@@ -23,10 +24,11 @@ namespace TicketStore.Entities
         public DateTime UpdatedAt { get; set; }
 
         public string TicketTypesId { get;set; }
-        public TicketTypes TicketTypes { get; set; }
+        public virtual TicketTypes TicketTypes { get; set; }
         public string LocationId { get; set; }
-        public Location Location { get; set; }
+        public virtual Location Location { get; set; }
         public string OrganizerId { get; set; }
-        public User Organizer { get; set; }
+        public virtual User Organizer { get; set; }
+        public virtual ICollection<Ticket> TicketsSold { get; set; }
     }
 }

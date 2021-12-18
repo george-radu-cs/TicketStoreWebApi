@@ -91,6 +91,9 @@ namespace TicketStore
 
             services.AddTransient<IEventRepository, EventRepository>();
             services.AddTransient<IEventManager, EventManager>();
+
+            services.AddTransient<ITicketRepository, TicketRepository>();
+            services.AddTransient<ITicketManager, TicketManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

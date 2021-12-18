@@ -10,11 +10,11 @@ namespace TicketStore.Controllers
     [ApiController]
     public class EventController : ControllerBase
     {
-        private readonly IEventManager _manager;
+        private readonly IEventManager _eventManager;
 
-        public EventController(IEventManager eventManager)
+        public EventController(IEventManager eventEventManager)
         {
-            this._manager = eventManager;
+            this._eventManager = eventEventManager;
         }
 
         [HttpGet("events")]
@@ -22,7 +22,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var events = _manager.GetEvents();
+                var events = _eventManager.GetEvents();
                 return Ok(events);
             }
             catch (Exception e)
@@ -36,7 +36,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var _event = _manager.GetEventById(id);
+                var _event = _eventManager.GetEventById(id);
                 return Ok(_event);
             }
             catch (Exception e)
@@ -50,7 +50,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                _manager.Create(eventModel);
+                _eventManager.Create(eventModel);
 
                 return Ok();
             }
@@ -61,12 +61,12 @@ namespace TicketStore.Controllers
             }
         }
 
-        [HttpPost("update-event")]
+        [HttpPatch("update-event")]
         public async Task<IActionResult> Update([FromBody] EventModel eventModel)
         {
             try
             {
-                _manager.Update(eventModel);
+                _eventManager.Update(eventModel);
 
                 return Ok();
             }
@@ -77,12 +77,12 @@ namespace TicketStore.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             try
             {
-                _manager.Delete(id);
+                _eventManager.Delete(id);
 
                 return Ok();
             }

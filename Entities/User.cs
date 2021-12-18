@@ -17,6 +17,9 @@ namespace TicketStore.Entities
         public DateTime UpdatedAt { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; }
+        // empty if user is not organizer
         public virtual ICollection<Event> EventsCreated { get; set; }
+        // empty if user is not buyer
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }
