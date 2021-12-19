@@ -94,6 +94,9 @@ namespace TicketStore
 
             services.AddTransient<ITicketRepository, TicketRepository>();
             services.AddTransient<ITicketManager, TicketManager>();
+
+            services.AddTransient<IReviewRepository, ReviewRepository>();
+            services.AddTransient<IReviewManager, ReviewManager>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

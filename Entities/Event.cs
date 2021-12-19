@@ -30,5 +30,6 @@ namespace TicketStore.Entities
         public string OrganizerId { get; set; }
         public virtual User Organizer { get; set; }
         public virtual ICollection<Ticket> TicketsSold { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

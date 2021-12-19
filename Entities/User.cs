@@ -21,5 +21,7 @@ namespace TicketStore.Entities
         public virtual ICollection<Event> EventsCreated { get; set; }
         // empty if user is not buyer
         public virtual ICollection<Ticket> Tickets { get; set; }
+        // empty if user is not buyer
+        public virtual ICollection<Review> Reviews { get;set; }
     }
 }
