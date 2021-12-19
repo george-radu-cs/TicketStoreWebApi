@@ -71,15 +71,13 @@ namespace TicketStore.Managers
 
         public void Update(TicketModel model)
         {
-            var updateTicket = GetTicketById(model.UserId, model.EventId);
+            var updatedTicket = GetTicketById(model.UserId, model.EventId);
             var date = DateTime.Now.ToUniversalTime();
-            updateTicket.UserId = model.UserId;
-            updateTicket.EventId = model.EventId;
-            updateTicket.TicketType = model.TicketType;
-            updateTicket.Price = model.Price;
-            updateTicket.UpdatedAt = date;
+            updatedTicket.TicketType = model.TicketType;
+            updatedTicket.Price = model.Price;
+            updatedTicket.UpdatedAt = date;
             
-            _ticketRepository.Update(updateTicket);
+            _ticketRepository.Update(updatedTicket);
         }
 
         public void Delete(string userId, string eventId)

@@ -74,11 +74,11 @@ namespace TicketStore.Controllers
         }
 
         [HttpPost("create-ticket")]
-        public async Task<IActionResult> Create([FromBody] TicketModel model)
+        public async Task<IActionResult> Create([FromBody] TicketModel ticketModel)
         {
             try
             {
-                _ticketManager.Create(model);
+                _ticketManager.Create(ticketModel);
 
                 return Ok();
             }
@@ -90,11 +90,11 @@ namespace TicketStore.Controllers
         }
 
         [HttpPatch("update-ticket")]
-        public async Task<IActionResult> Update([FromBody] TicketModel model)
+        public async Task<IActionResult> Update([FromBody] TicketModel ticketModel)
         {
             try
             {
-                _ticketManager.Update(model);
+                _ticketManager.Update(ticketModel);
 
                 return Ok();
             }
