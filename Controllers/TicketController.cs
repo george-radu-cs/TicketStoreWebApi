@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
 
@@ -18,6 +20,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpGet("tickets")]
+        [Authorize(Policy = AuthorizationRoles.Admin)]
         public async Task<IActionResult> GetTickets()
         {
             try
@@ -32,6 +35,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpGet("byId/{userId}&{eventId}")]
+        [Authorize(Policy = AuthorizationRoles.Anyone)]
         public async Task<IActionResult> GetTicket([FromRoute] string userId, [FromRoute] string eventId)
         {
             try
@@ -46,6 +50,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpGet("buyer-tickets/{userId}")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
         public async Task<IActionResult> GetBuyerTickets([FromRoute] string userId)
         {
             try
@@ -60,6 +65,7 @@ namespace TicketStore.Controllers
         }
         
         [HttpGet("event-tickets/{eventId}")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> GetEventTickets([FromRoute] string eventId)
         {
             try
@@ -74,6 +80,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpPost("create-ticket")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
         public async Task<IActionResult> Create([FromBody] TicketModel ticketModel)
         {
             try
@@ -90,6 +97,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpPatch("update-ticket")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
         public async Task<IActionResult> Update([FromBody] TicketModel ticketModel)
         {
             try
@@ -105,6 +113,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpDelete("delete-ticket/{userId}&{eventId}")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
         public async Task<IActionResult> Delete([FromRoute] string userId, [FromRoute] string eventId)
         {
             try

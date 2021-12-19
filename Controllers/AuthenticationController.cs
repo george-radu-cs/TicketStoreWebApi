@@ -10,7 +10,7 @@ namespace TicketStore.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private IAuthenticationManager _authenticationManager;
+        private readonly IAuthenticationManager _authenticationManager;
 
         public AuthenticationController(IAuthenticationManager authenticationManager)
         {
