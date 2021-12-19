@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
 
@@ -18,6 +20,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpGet("events")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
         public async Task<IActionResult> GetEvents()
         {
             try
@@ -32,6 +35,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpGet("byId/{id}")]
+        [Authorize(Policy = AuthorizationRoles.Anyone)]
         public async Task<IActionResult> GetEvent([FromRoute] string id)
         {
             try
@@ -46,6 +50,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpPost("create-event")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> Create([FromBody] EventModel eventModel)
         {
             try
@@ -62,6 +67,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpPatch("update-event")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> Update([FromBody] EventModel eventModel)
         {
             try
@@ -78,6 +84,7 @@ namespace TicketStore.Controllers
         }
 
         [HttpDelete("delete/{id}")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             try

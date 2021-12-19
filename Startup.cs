@@ -37,6 +37,34 @@ namespace TicketStore
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TicketStore", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
             // connection to database
@@ -70,17 +98,30 @@ namespace TicketStore
             // types of user authorization
             services.AddAuthorization(opt =>
             {
-                opt.AddPolicy("Buyer",
-                    policy => policy.RequireRole("Buyer").RequireAuthenticatedUser()
-                        .AddAuthenticationSchemes("AuthSchema").Build());
-                opt.AddPolicy("Organizer",
-                    policy => policy.RequireRole("Organizer").RequireAuthenticatedUser()
-                        .AddAuthenticationSchemes("AuthSchema").Build());
-                opt.AddPolicy("Admin",
-                    policy => policy.RequireRole("Admin").RequireAuthenticatedUser()
-                        .AddAuthenticationSchemes("AuthSchema").Build());
+                opt.AddPolicy(AuthorizationRoles.Buyer,
+                    policy => policy.RequireRole(AuthorizationRoles.Buyer).RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.Organizer,
+                    policy => policy.RequireRole(AuthorizationRoles.Organizer).RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.Admin,
+                    policy => policy.RequireRole(AuthorizationRoles.Admin).RequireAuthenticatedUser()
+                        .AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.OrganizerOrAdmin,
+                    policy => policy.RequireRole(AuthorizationRoles.Organizer, AuthorizationRoles.Admin)
+                        .RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.BuyerOrAdmin,
+                    policy => policy.RequireRole(AuthorizationRoles.Buyer, AuthorizationRoles.Admin)
+                        .RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.BuyerOrOrganizer,
+                    policy => policy.RequireRole(AuthorizationRoles.Buyer, AuthorizationRoles.Organizer)
+                        .RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
+                opt.AddPolicy(AuthorizationRoles.Anyone,
+                    policy => policy
+                        .RequireRole(AuthorizationRoles.Admin, AuthorizationRoles.Buyer, AuthorizationRoles.Organizer)
+                        .RequireAuthenticatedUser().AddAuthenticationSchemes("AuthScheme").Build());
             });
-            
+
             // configure JSON serialization
             services.AddControllersWithViews()
                 .AddNewtonsoftJson(options =>
@@ -112,6 +153,8 @@ namespace TicketStore
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

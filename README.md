@@ -46,12 +46,12 @@ Basic features:
  - [ ] create all tables in db
  - [x] add authentication controller
  - [x] add event controller
- - [ ] add reviews controller
+ - [x] add reviews controller
  - [x] add ticket controller
  - [x] relation one-to-one
  - [x] relation one-to-many
  - [x] relation many-to-many
- - [ ] add authorization for endpoints
+ - [x] add authorization for endpoints
  - [ ] input validations for all methods
  - [ ] add response models to now return all types of data to web
  - [ ] change returning https codes and error messages for all endpoints
