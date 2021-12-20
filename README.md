@@ -55,6 +55,7 @@ Basic features:
  - [ ] input validations for all methods
  - [ ] add response models to now return all types of data to web
  - [ ] change returning https codes and error messages for all endpoints
+ - [x] enhance password encryption by adding some random key from .env
 
 To be added after ALL basic features are done and have more time left
 

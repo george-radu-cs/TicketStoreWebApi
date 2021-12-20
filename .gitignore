@@ -1,5 +1,6 @@
 appsettings.json
 appsettings.Development.json
+/Properties/launchSettings.json
 .idea
 /bin/**
 /obj/**
