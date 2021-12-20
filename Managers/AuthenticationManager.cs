@@ -15,9 +15,23 @@ namespace TicketStore.Managers
         public AuthenticationManager(UserManager<User> userManager, SignInManager<User> signInManager,
             ITokenManager tokenManager)
         {
-            this._userManager = userManager;
-            this._signInManager = signInManager;
-            this._tokenManager = tokenManager;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenManager = tokenManager;
+        }
+
+        // get password enhancers and a bool to mark if the strings are valid from environment variables
+        private static async Task<(string, string, bool)> GetPasswordEnhancers()
+        {
+            var passEnhancerBefore = Environment.GetEnvironmentVariable("PASS_BEFORE");
+            var passEnhancerAfter = Environment.GetEnvironmentVariable("PASS_AFTER");
+            // couldn't get the password enhancers, set isValid to false, so we won't do the auth without these strings 
+            if (passEnhancerBefore == null || passEnhancerAfter == null)
+            {
+                return ("", "", false);
+            }
+
+            return (passEnhancerBefore, passEnhancerAfter, true);
         }
 
         public async Task<bool> SignUp(SignUpUserModel signUpUserModel)
@@ -37,7 +51,11 @@ namespace TicketStore.Managers
                 UpdatedAt = date,
             };
 
-            var result = await _userManager.CreateAsync(user, signUpUserModel.Password);
+            var (passEnhancerBefore, passEnhancerAfter, isValid) = GetPasswordEnhancers().Result;
+            if (!isValid) return false;
+            var result = await _userManager.CreateAsync(user,
+                passEnhancerBefore + signUpUserModel.Password + passEnhancerAfter);
+
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, signUpUserModel.RoleId);
@@ -51,12 +69,14 @@ namespace TicketStore.Managers
         {
             var user = await _userManager.FindByEmailAsync(loginUserModel.Email);
             if (user == null) return null;
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginUserModel.Password, false);
+            var (passEnhancerBefore, passEnhancerAfter, isValid) = GetPasswordEnhancers().Result;
+            if (!isValid) return null;
+            var result = await _signInManager.CheckPasswordSignInAsync(user,
+                passEnhancerBefore + loginUserModel.Password + passEnhancerAfter, false);
             if (!result.Succeeded) return null;
             // create jwt token for user
             var token = await _tokenManager.CreateToken(user);
-
-            return new TokenModel { Token = token };
+            return token == null ? null : new TokenModel { Token = token };
         }
     }
 }
