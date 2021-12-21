@@ -58,6 +58,26 @@ namespace TicketStore.Controllers
             }
         }
 
+        [HttpGet("organizer-events/{organizerId}")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
+        public async Task<IActionResult> GetOrganizerEvents([FromRoute] string organizerId)
+        {
+            try
+            {
+                var events = _eventManager.GetOrganizerEvents(organizerId);
+                if (events == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(events);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("couldn't get the organizer's events");
+            }
+        }
+
         [HttpPost("create-event")]
         [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> Create([FromBody] EventModel eventModel)
