@@ -53,7 +53,7 @@ Basic features:
  - [x] relation many-to-many
  - [x] add authorization for endpoints
  - [ ] input validations for all methods
- - [ ] add response models to now return all types of data to web
+ - [x] add response models to now return all types of data to web
  - [ ] change returning https codes and error messages for all endpoints
  - [x] enhance password encryption by adding some random key from .env
 

@@ -10,6 +10,7 @@ namespace TicketStore.Managers
         Event GetEventById(string id);
         EventResponseModel GetEventResponseById(string id);
         List<EventResponseModel> GetEvents();
+        List<EventResponseModel> GetOrganizerEvents(string organizerId);
         void Create(EventModel model);
         void Update(EventModel model);
         void Delete(string id);

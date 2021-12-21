@@ -44,6 +44,16 @@ namespace TicketStore.Managers
             return events;
         }
 
+        public List<ResponseModels.EventResponseModel> GetOrganizerEvents(string organizerId)
+        {
+            var events = _eventRepository.GetEventsWithAllDataIQueryable()
+                .Where(e => e.OrganizerId == organizerId)
+                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(e))
+                .ToList();
+            
+            return events;
+        }
+
         public void Create(EventModel model)
         {
             // get the date now for all tables
