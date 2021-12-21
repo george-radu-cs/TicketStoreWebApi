@@ -16,7 +16,7 @@ namespace TicketStore.Controllers
 
         public TicketController(ITicketManager ticketManager)
         {
-            this._ticketManager = ticketManager;
+            _ticketManager = ticketManager;
         }
 
         [HttpGet("tickets")]
@@ -25,7 +25,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var tickets = _ticketManager.GetTickets();
+                var tickets = _ticketManager.GetTicketsResponse();
                 return Ok(tickets);
             }
             catch (Exception e)
@@ -40,7 +40,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var ticket = _ticketManager.GetTicketById(userId, eventId);
+                var ticket = _ticketManager.GetTicketResponseById(userId, eventId);
                 return Ok(ticket);
             }
             catch (Exception e)
@@ -55,8 +55,8 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var ticket = _ticketManager.GetBuyerTickets(userId);
-                return Ok(ticket);
+                var tickets = _ticketManager.GetBuyerTicketsResponse(userId);
+                return Ok(tickets);
             }
             catch (Exception e)
             {
@@ -70,8 +70,8 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var ticket = _ticketManager.GetEventSoldTickets(eventId);
-                return Ok(ticket);
+                var tickets = _ticketManager.GetEventSoldTicketsResponse(eventId);
+                return Ok(tickets);
             }
             catch (Exception e)
             {

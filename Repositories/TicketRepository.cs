@@ -10,7 +10,7 @@ namespace TicketStore.Repositories
 
         public TicketRepository(TicketStoreContext db)
         {
-            this._db = db;
+            _db = db;
         }
 
         public IQueryable<Ticket> GetTicketsIQueryable()

@@ -14,7 +14,7 @@ namespace TicketStore.Controllers
 
         public AuthenticationController(IAuthenticationManager authenticationManager)
         {
-            this._authenticationManager = authenticationManager;
+            _authenticationManager = authenticationManager;
         }
 
         [HttpPost("sign-up")]
