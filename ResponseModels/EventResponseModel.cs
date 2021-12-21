@@ -1,8 +1,8 @@
 using System;
 
-namespace TicketStore.Models
+namespace TicketStore.ResponseModels
 {
-    public class EventModel
+    public class EventResponseModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -12,8 +12,8 @@ namespace TicketStore.Models
         public DateTime EndDate { get; set; }
         public string Category { get; set; }
         public string Genre { get; set; }
-        public string OrganizerId { get; set; }
-        public LocationModel Location { get; set; }
-        public TicketTypes TicketTypes { get; set; }
+        public LocationResponseModel Location { get; set; }
+        public TicketTypesResponseModel TicketTypes { get; set; }
+        public UserResponseModel Organizer { get; set; }
     }
 }

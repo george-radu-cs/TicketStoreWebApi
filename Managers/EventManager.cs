@@ -4,6 +4,7 @@ using System.Linq;
 using TicketStore.Entities;
 using TicketStore.Models;
 using TicketStore.Repositories;
+using static TicketStore.Utils.ResponseConversions;
 using TicketTypes = TicketStore.Entities.TicketTypes;
 
 namespace TicketStore.Managers
@@ -14,7 +15,7 @@ namespace TicketStore.Managers
 
         public EventManager(IEventRepository eventRepository)
         {
-            this._eventRepository = eventRepository;
+            _eventRepository = eventRepository;
         }
 
         public Event GetEventById(string id)
@@ -27,15 +28,20 @@ namespace TicketStore.Managers
             return _event;
         }
 
-        public List<Event> GetEvents()
+        public ResponseModels.EventResponseModel GetEventResponseById(string id)
+        {
+            var _event = GetEventById(id);
+            return _event == null ? null : ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(_event);
+        }
+
+        public List<ResponseModels.EventResponseModel> GetEvents()
         {
             // we want a list with events with their organizer
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
-                .Select(e => e)
+                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(e))
                 .ToList();
-            // TODO add response models
 
-            return events.ToList();
+            return events;
         }
 
         public void Create(EventModel model)
@@ -133,7 +139,7 @@ namespace TicketStore.Managers
         public void Delete(string id)
         {
             var _event = GetEventById(id);
-            
+
             _eventRepository.Delete(_event);
         }
     }

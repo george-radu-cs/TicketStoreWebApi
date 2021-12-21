@@ -4,42 +4,18 @@ using System.Linq;
 using TicketStore.Entities;
 using TicketStore.Models;
 using TicketStore.Repositories;
+using TicketStore.ResponseModels;
+using static TicketStore.Utils.ResponseConversions;
 
 namespace TicketStore.Managers
 {
     public class ReviewManager : IReviewManager
     {
-        public readonly IReviewRepository _reviewRepository;
+        private readonly IReviewRepository _reviewRepository;
 
         public ReviewManager(IReviewRepository reviewRepository)
         {
-            this._reviewRepository = reviewRepository;
-        }
-
-        public List<Review> GetReviews()
-        {
-            var reviews = _reviewRepository.GetReviewsIQueryable()
-                .ToList();
-
-            return reviews;
-        }
-
-        public List<Review> GetUserReviews(string userId)
-        {
-            var reviews = _reviewRepository.GetReviewsWithEventIQueryable()
-                .Where(r => r.UserId == userId)
-                .ToList();
-
-            return reviews;
-        }
-
-        public List<Review> GetEventReviews(string eventId)
-        {
-            var reviews = _reviewRepository.GetReviewsWithUserIQueryable()
-                .Where(r => r.EventId == eventId)
-                .ToList();
-
-            return reviews;
+            _reviewRepository = reviewRepository;
         }
 
         public Review GetReviewById(string id)
@@ -48,6 +24,43 @@ namespace TicketStore.Managers
                 .FirstOrDefault(r => r.Id == id);
 
             return review;
+        }
+        
+        public ReviewResponseModel GetReviewResponseById(string id)
+        {
+            var review = _reviewRepository.GetReviewsWithUserAndEventIQueryable()
+                .FirstOrDefault(r => r.Id == id);
+
+            return ConvertToReviewResponseModelWithUserAndEvent(review);
+        }
+
+        public List<ReviewResponseModel> GetReviewsResponse()
+        {
+            var reviews = _reviewRepository.GetReviewsIQueryable()
+                .Select(r => ConvertToReviewResponseModel(r))
+                .ToList();
+
+            return reviews;
+        }
+
+        public List<ReviewResponseModel> GetUserReviewsResponse(string userId)
+        {
+            var reviews = _reviewRepository.GetReviewsWithEventIQueryable()
+                .Where(r => r.UserId == userId)
+                .Select(r => ConvertToReviewResponseModelWithEvent(r))
+                .ToList();
+
+            return reviews;
+        }
+
+        public List<ReviewResponseModel> GetEventReviewsResponse(string eventId)
+        {
+            var reviews = _reviewRepository.GetReviewsWithUserIQueryable()
+                .Where(r => r.EventId == eventId)
+                .Select(r => ConvertToReviewResponseModelWithUser(r))
+                .ToList();
+
+            return reviews;
         }
 
         public void Create(ReviewModel model)

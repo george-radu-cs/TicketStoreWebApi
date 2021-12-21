@@ -16,7 +16,7 @@ namespace TicketStore.Controllers
 
         public ReviewController(IReviewManager reviewManager)
         {
-            this._reviewManager = reviewManager;
+            _reviewManager = reviewManager;
         }
 
         [HttpGet("reviews")]
@@ -25,7 +25,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var reviews = _reviewManager.GetReviews();
+                var reviews = _reviewManager.GetReviewsResponse();
 
                 return Ok(reviews);
             }
@@ -41,7 +41,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var review = _reviewManager.GetReviewById(id);
+                var review = _reviewManager.GetReviewResponseById(id);
 
                 return Ok(review);
             } catch (Exception)
@@ -56,7 +56,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var review = _reviewManager.GetUserReviews(userId);
+                var review = _reviewManager.GetUserReviewsResponse(userId);
 
                 return Ok(review);
             }
@@ -72,7 +72,7 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var review = _reviewManager.GetEventReviews(eventId);
+                var review = _reviewManager.GetEventReviewsResponse(eventId);
 
                 return Ok(review);
             }

@@ -16,7 +16,7 @@ namespace TicketStore.Controllers
 
         public EventController(IEventManager eventEventManager)
         {
-            this._eventManager = eventEventManager;
+            _eventManager = eventEventManager;
         }
 
         [HttpGet("events")]
@@ -26,6 +26,10 @@ namespace TicketStore.Controllers
             try
             {
                 var events = _eventManager.GetEvents();
+                if (events == null)
+                {
+                    return NotFound();
+                }
                 return Ok(events);
             }
             catch (Exception e)
@@ -40,7 +44,12 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var _event = _eventManager.GetEventById(id);
+                var _event = _eventManager.GetEventResponseById(id);
+                if (_event == null)
+                {
+                    return NotFound();
+                }
+                
                 return Ok(_event);
             }
             catch (Exception e)

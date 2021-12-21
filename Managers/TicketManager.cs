@@ -4,6 +4,8 @@ using System.Linq;
 using TicketStore.Entities;
 using TicketStore.Models;
 using TicketStore.Repositories;
+using TicketStore.ResponseModels;
+using static TicketStore.Utils.ResponseConversions;
 
 namespace TicketStore.Managers
 {
@@ -11,46 +13,53 @@ namespace TicketStore.Managers
     {
         private readonly ITicketRepository _ticketRepository;
 
-        public TicketManager(ITicketRepository ticketRepository)
-        {
-            this._ticketRepository = ticketRepository;
-        }
-
-        public List<Ticket> GetTickets()
-        {
-            var tickets = _ticketRepository.GetTicketsIQueryable()
-                .Select(t => t)
-                .ToList();
-
-            return tickets;
-        }
-
-        public List<Ticket> GetBuyerTickets(string userId)
-        {
-            var tickets = _ticketRepository.GetTicketsWithEventIQueryable()
-                .Where(t => t.UserId == userId)
-                .Select(t => t)
-                .ToList();
-
-            return tickets;
-        }
-
-        public List<Ticket> GetEventSoldTickets(string eventId)
-        {
-            var tickets = _ticketRepository.GetTicketsWithBuyerIQueryable()
-                .Where(t => t.EventId == eventId)
-                .Select(t => t)
-                .ToList();
-
-            return tickets;
-        }
-
         public Ticket GetTicketById(string userId, string eventId)
         {
             var ticket = _ticketRepository.GetTicketsWithBuyerAndEventIQueryable()
                 .FirstOrDefault(t => t.UserId == userId && t.EventId == eventId);
 
             return ticket;
+        }
+
+        public TicketResponseModel GetTicketResponseById(string userId, string eventId)
+        {
+            var ticket = GetTicketById(userId, eventId);
+
+            return ConvertToTicketResponseModelWithUserAndEvent(ticket);
+        }
+
+        public TicketManager(ITicketRepository ticketRepository)
+        {
+            _ticketRepository = ticketRepository;
+        }
+
+        public List<TicketResponseModel> GetTicketsResponse()
+        {
+            var tickets = _ticketRepository.GetTicketsIQueryable()
+                .Select(t => ConvertToTicketResponseModel(t))
+                .ToList();
+
+            return tickets;
+        }
+
+        public List<TicketResponseModel> GetBuyerTicketsResponse(string userId)
+        {
+            var tickets = _ticketRepository.GetTicketsWithEventIQueryable()
+                .Where(t => t.UserId == userId)
+                .Select(t => ConvertToTicketResponseModelWithEvent(t))
+                .ToList();
+
+            return tickets;
+        }
+
+        public List<TicketResponseModel> GetEventSoldTicketsResponse(string eventId)
+        {
+            var tickets = _ticketRepository.GetTicketsWithBuyerIQueryable()
+                .Where(t => t.EventId == eventId)
+                .Select(t => ConvertToTicketResponseModelWithUser(t))
+                .ToList();
+
+            return tickets;
         }
 
         public void Create(TicketModel model)
