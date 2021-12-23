@@ -16,6 +16,7 @@ namespace TicketStore.Entities
         public string PriceVipTicket { get; set; }
         public string PriceChildTicket { get; set; }
         public string PriceStudentTicket { get; set; }
+        public string PriceCurrency { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

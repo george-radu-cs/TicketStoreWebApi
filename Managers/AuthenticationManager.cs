@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using TicketStore.Entities;
 using TicketStore.Models;
+using TicketStore.Utils;
 
 namespace TicketStore.Managers
 {
@@ -34,8 +35,16 @@ namespace TicketStore.Managers
             return (passEnhancerBefore, passEnhancerAfter, true);
         }
 
-        public async Task<bool> SignUp(SignUpUserModel signUpUserModel)
+        public async Task<(bool success, string errorMessage, string errorType)> SignUp(SignUpUserModel signUpUserModel)
         {
+            // check if the input data is valid
+            var (isValid, validationErrorMessage) = Validations.ValidateRegister(signUpUserModel);
+            if (!isValid)
+            {
+                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+            }
+
+            // create the model to save in database
             var date = DateTime.Now.ToUniversalTime();
             var user = new User
             {
@@ -51,32 +60,82 @@ namespace TicketStore.Managers
                 UpdatedAt = date,
             };
 
-            var (passEnhancerBefore, passEnhancerAfter, isValid) = GetPasswordEnhancers().Result;
-            if (!isValid) return false;
-            var result = await _userManager.CreateAsync(user,
-                passEnhancerBefore + signUpUserModel.Password + passEnhancerAfter);
-
-            if (result.Succeeded)
+            // get from env the password enhancers to create the password
+            var (passEnhancerBefore, passEnhancerAfter, isPassValid) = GetPasswordEnhancers().Result;
+            if (!isPassValid) // there was a problem while getting the password enhancers => stop the signup process
             {
-                await _userManager.AddToRoleAsync(user, signUpUserModel.RoleId);
-                return true;
+                return (success: false, errorMessage: "Server error: Couldn't compute the password",
+                    errorType: ErrorTypes.ServerFault);
             }
 
-            return false;
+            // try to create the user in the db
+            var result = await _userManager.CreateAsync(user,
+                passEnhancerBefore + signUpUserModel.Password + passEnhancerAfter);
+            if (!result.Succeeded)
+            {
+                return (success: false, errorMessage: "Couldn't create the user", errorType: ErrorTypes.ServerFault);
+            }
+
+            // add the user role for the user; in case of failure delete the user from the db
+            try
+            {
+                var roleResult = await _userManager.AddToRoleAsync(user, signUpUserModel.Role);
+                if (!roleResult.Succeeded)
+                {
+                    var toDeleteUser = await _userManager.FindByEmailAsync(user.Email);
+                    await _userManager.DeleteAsync(toDeleteUser);
+
+                    return (success: false, errorMessage: "Couldn't create the user", errorType: ErrorTypes.ServerFault);
+                }
+            }
+            catch (Exception e)
+            {
+                var toDeleteUser = await _userManager.FindByEmailAsync(user.Email);
+                await _userManager.DeleteAsync(toDeleteUser);
+                throw;
+            }
+
+            // the user was created successfully
+            return (success: true, errorMessage: "", errorType: "");
         }
 
-        public async Task<TokenModel> Login(LoginUserModel loginUserModel)
+        public async Task<(TokenModel token, string errorMessage, string errorType)> Login(
+            LoginUserModel loginUserModel)
         {
+            // check if the input data is valid
+            var (isValid, validateErrorMessage) = Validations.ValidateLogin(loginUserModel);
+            if (!isValid)
+            {
+                return (token: null, errorMessage: validateErrorMessage, errorType: ErrorTypes.UserFault);
+            }
+
+            // check if the user exists - find by normalized email
             var user = await _userManager.FindByEmailAsync(loginUserModel.Email);
-            if (user == null) return null;
-            var (passEnhancerBefore, passEnhancerAfter, isValid) = GetPasswordEnhancers().Result;
-            if (!isValid) return null;
+            if (user == null)
+            {
+                return (token: null, errorMessage: "Error: User doesn't exists.", errorType: ErrorTypes.UserFault);
+            }
+
+            // get from env the password enhancers to check the password
+            var (passEnhancerBefore, passEnhancerAfter, isPassValid) = GetPasswordEnhancers().Result;
+            if (!isPassValid)
+            {
+                return (token: null, errorMessage: "Error: Couldn't verify the user password.", errorType: ErrorTypes.ServerFault);
+            }
+
+            // verify the password 
             var result = await _signInManager.CheckPasswordSignInAsync(user,
                 passEnhancerBefore + loginUserModel.Password + passEnhancerAfter, false);
-            if (!result.Succeeded) return null;
+            if (!result.Succeeded)
+            {
+                return (token: null, errorMessage: "Error: Passwords doesn't match.", errorType: ErrorTypes.UserFault);
+            }
+
             // create jwt token for user
             var token = await _tokenManager.CreateToken(user);
-            return token == null ? null : new TokenModel { Token = token };
+            return token == null
+                ? (token: null, errorMessage: "Error: Couldn't create the jwt token.", errorType: ErrorTypes.ServerFault)
+                : (token: new TokenModel { Token = token }, errorMessage: "", errorType: "");
         }
     }
 }

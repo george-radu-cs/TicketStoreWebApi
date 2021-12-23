@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
+using TicketStore.Utils;
 
 namespace TicketStore.Controllers
 {
@@ -19,34 +21,54 @@ namespace TicketStore.Controllers
             _reviewManager = reviewManager;
         }
 
-        [HttpGet("reviews")]
-        [Authorize(Policy = AuthorizationRoles.Admin)]
-        public async Task<IActionResult> GetReviews()
-        {
-            try
-            {
-                var reviews = _reviewManager.GetReviewsResponse();
-
-                return Ok(reviews);
-            }
-            catch (Exception e)
-            {
-                return BadRequest("couldn't get the reviews");
-            }
-        }
-
         [HttpGet("byId/{id}")]
         [Authorize(Policy = AuthorizationRoles.Anyone)]
         public async Task<IActionResult> GetReview([FromRoute] string id)
         {
             try
             {
-                var review = _reviewManager.GetReviewResponseById(id);
+                var (resReview, errorMessage, errorType) = _reviewManager.GetReviewResponseById(id);
+                if (resReview != null)
+                {
+                    return Ok(resReview);
+                }
 
-                return Ok(review);
-            } catch (Exception)
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
+                    _ => NotFound()
+                };
+            }
+            catch (Exception e)
             {
-                return BadRequest("couldn't get the review");
+                return BadRequest($"Couldn't get the review. Error message: {e.Message}");
+            }
+        }
+
+
+        [HttpGet("reviews")]
+        [Authorize(Policy = AuthorizationRoles.Admin)]
+        public async Task<IActionResult> GetReviews()
+        {
+            try
+            {
+                var (resReviews, errorMessage, errorType) = _reviewManager.GetReviewsResponse();
+                if (resReviews != null)
+                {
+                    return Ok(resReviews);
+                }
+
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Couldn't get the reviews. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
+                    _ => NotFound()
+                };
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Couldn't get the reviews. Error message: {e.Message}");
             }
         }
 
@@ -56,13 +78,22 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var review = _reviewManager.GetUserReviewsResponse(userId);
+                var (resReviews, errorMessage, errorType) = _reviewManager.GetUserReviewsResponse(userId);
+                if (resReviews != null)
+                {
+                    return Ok(resReviews);
+                }
 
-                return Ok(review);
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
+                    _ => NotFound()
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("couldn't get the user reviews");
+                return BadRequest($"Couldn't get the user's reviews. Error message: {e.Message}");
             }
         }
 
@@ -72,13 +103,22 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var review = _reviewManager.GetEventReviewsResponse(eventId);
+                var (resReviews, errorMessage, errorType) = _reviewManager.GetEventReviewsResponse(eventId);
+                if (resReviews != null)
+                {
+                    return Ok(resReviews);
+                }
 
-                return Ok(review);
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
+                    _ => NotFound()
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("couldn't get the event reviews");
+                return BadRequest($"Couldn't get the event's reviews. Error message: {e.Message}");
             }
         }
 
@@ -88,13 +128,21 @@ namespace TicketStore.Controllers
         {
             try
             {
-                _reviewManager.Create(reviewModel);
+                var (success, errorMessage, errorType) = _reviewManager.Create(reviewModel);
+                if (success)
+                {
+                    return Created("success", "Review created successfully");
+                }
 
-                return Ok();
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Couldn't create the review. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("couldn't create the review");
+                return BadRequest($"Couldn't create the review. Error message: {e.Message}");
             }
         }
 
@@ -104,13 +152,21 @@ namespace TicketStore.Controllers
         {
             try
             {
-                _reviewManager.Update(reviewModel);
+                var (success, errorMessage, errorType) = _reviewManager.Update(reviewModel);
+                if (success)
+                {
+                    return Ok("Review updated successfully");
+                }
 
-                return Ok();
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Couldn't update the review. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("couldn't update the review");
+                return BadRequest($"Couldn't update the review. Error message: {e.Message}");
             }
         }
 
@@ -120,13 +176,21 @@ namespace TicketStore.Controllers
         {
             try
             {
-                _reviewManager.Delete(id);
+                var (success, errorMessage, errorType) = _reviewManager.Delete(id);
+                if (success)
+                {
+                    return Ok("Review deleted successfully");
+                }
 
-                return Ok();
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Couldn't delete the review. Error message: {errorMessage}"),
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("couldn't delete the review");
+                return BadRequest($"Couldn't delete the review. Error message: {e.Message}");
             }
         }
     }

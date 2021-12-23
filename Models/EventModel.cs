@@ -14,6 +14,6 @@ namespace TicketStore.Models
         public string Genre { get; set; }
         public string OrganizerId { get; set; }
         public LocationModel Location { get; set; }
-        public TicketTypes TicketTypes { get; set; }
+        public TicketTypesModels TicketTypes { get; set; }
     }
 }

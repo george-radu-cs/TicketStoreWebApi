@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketStore.Managers;
 using TicketStore.Models;
+using TicketStore.Utils;
 
 namespace TicketStore.Controllers
 {
@@ -22,18 +24,22 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var success = await _authenticationManager.SignUp(model);
-                if (!success)
+                var (success, errorMessage, errorType) = await _authenticationManager.SignUp(model);
+                if (success) // the user was created successfully
                 {
-                    return BadRequest("SignUp failed");
+                    return Created("success", "User created successfully");
                 }
 
-                return Ok();
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"SignUp failed. Error message: {errorMessage}"),
+                    // for any other errors return 500 
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
+                };
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return BadRequest("SignUp failed");
+                return BadRequest($"SignUp failed. Error message: {e.Message}");
             }
         }
 
@@ -42,17 +48,23 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var token = await _authenticationManager.Login(model);
-                if (token == null)
+                // try to login the user and send back the user's token
+                var (token, errorMessage, errorType) = await _authenticationManager.Login(model);
+                if (token != null)
                 {
-                    return BadRequest("Login failed");
+                    return Ok(token);
                 }
 
-                return Ok(token);
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest($"Login failed. Error message: {errorMessage}"),
+                    // for any other errors return 500
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
+                };
             }
             catch (Exception e)
             {
-                return BadRequest("Exception caught");
+                return BadRequest($"SignUp failed. Error message: {e.Message}");
             }
         }
     }

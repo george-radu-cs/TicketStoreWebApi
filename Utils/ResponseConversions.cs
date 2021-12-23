@@ -1,4 +1,3 @@
-using System;
 using System.Collections.ObjectModel;
 using TicketStore.Entities;
 using TicketStore.ResponseModels;

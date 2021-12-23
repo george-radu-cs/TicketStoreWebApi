@@ -10,6 +10,6 @@ namespace TicketStore.Models
         public int Age { get; set; }
         public bool IsStudent { get; set; }
         public string Password { get; set; }
-        public string RoleId { get; set; }
+        public string Role { get; set; }
     }
 }

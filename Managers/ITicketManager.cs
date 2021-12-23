@@ -8,12 +8,20 @@ namespace TicketStore.Managers
     public interface ITicketManager
     {
         Ticket GetTicketById(string userId, string eventId);
-        TicketResponseModel GetTicketResponseById(string userId, string eventId);
-        List<TicketResponseModel> GetTicketsResponse();
-        List<TicketResponseModel> GetBuyerTicketsResponse(string userId);
-        List<TicketResponseModel> GetEventSoldTicketsResponse(string eventId);
-        void Create(TicketModel model);
-        void Update(TicketModel model);
-        void Delete(string userId, string eventId);
+
+        (TicketResponseModel resTicket, string errorMessage, string errorType) GetTicketResponseById(string userId,
+            string eventId);
+
+        (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetTicketsResponse();
+
+        (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetBuyerTicketsResponse(
+            string userId);
+
+        (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetEventSoldTicketsResponse(
+            string eventId);
+
+        (bool success, string errorMessage, string errorType) Create(TicketModel model);
+        (bool success, string errorMessage, string errorType) Update(TicketModel model);
+        (bool success, string errorMessage, string errorType) Delete(string userId, string eventId);
     }
 }
