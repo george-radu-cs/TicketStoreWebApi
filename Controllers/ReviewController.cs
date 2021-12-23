@@ -21,13 +21,13 @@ namespace TicketStore.Controllers
             _reviewManager = reviewManager;
         }
 
-        [HttpGet("byId/{id}")]
+        [HttpGet("byId/{userId}&{eventId}")]
         [Authorize(Policy = AuthorizationRoles.Anyone)]
-        public async Task<IActionResult> GetReview([FromRoute] string id)
+        public async Task<IActionResult> GetReview([FromRoute] string userId, string eventId)
         {
             try
             {
-                var (resReview, errorMessage, errorType) = _reviewManager.GetReviewResponseById(id);
+                var (resReview, errorMessage, errorType) = _reviewManager.GetReviewResponseById(userId, eventId);
                 if (resReview != null)
                 {
                     return Ok(resReview);
@@ -170,13 +170,13 @@ namespace TicketStore.Controllers
             }
         }
 
-        [HttpDelete("delete-review/{id}")]
+        [HttpDelete("delete-review/{userId}&{eventId}")]
         [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
-        public async Task<IActionResult> Delete([FromRoute] string id)
+        public async Task<IActionResult> Delete([FromRoute] string userId, string eventId)
         {
             try
             {
-                var (success, errorMessage, errorType) = _reviewManager.Delete(id);
+                var (success, errorMessage, errorType) = _reviewManager.Delete(userId, eventId);
                 if (success)
                 {
                     return Ok("Review deleted successfully");
