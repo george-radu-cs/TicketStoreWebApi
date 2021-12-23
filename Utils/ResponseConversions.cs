@@ -124,6 +124,7 @@ namespace TicketStore.Utils
             {
                 UserId = ticketToConvert.UserId,
                 EventId = ticketToConvert.EventId,
+                AuxiliaryId = ticketToConvert.AuxiliaryId,
                 TicketType = ticketToConvert.TicketType,
                 Price = ticketToConvert.Price,
             };

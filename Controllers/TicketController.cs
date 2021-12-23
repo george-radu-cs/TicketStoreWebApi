@@ -21,13 +21,14 @@ namespace TicketStore.Controllers
             _ticketManager = ticketManager;
         }
 
-        [HttpGet("byId/{userId}&{eventId}")]
+        [HttpGet("byId/{userId}&{eventId}&{auxiliaryId}")]
         [Authorize(Policy = AuthorizationRoles.Anyone)]
-        public async Task<IActionResult> GetTicket([FromRoute] string userId, [FromRoute] string eventId)
+        public async Task<IActionResult> GetTicket([FromRoute] string userId, string eventId, string auxiliaryId)
         {
             try
             {
-                var (resTicket, errorMessage, errorType) = _ticketManager.GetTicketResponseById(userId, eventId);
+                var (resTicket, errorMessage, errorType) =
+                    _ticketManager.GetTicketResponseById(userId, eventId, auxiliaryId);
                 if (resTicket != null)
                 {
                     return Ok(resTicket);
@@ -85,7 +86,8 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't get the user's tickets. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(
+                        $"Couldn't get the user's tickets. Error message: {errorMessage}"),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
@@ -110,7 +112,8 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't get the event tickets. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault =>
+                        BadRequest($"Couldn't get the event tickets. Error message: {errorMessage}"),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
@@ -169,13 +172,13 @@ namespace TicketStore.Controllers
             }
         }
 
-        [HttpDelete("delete-ticket/{userId}&{eventId}")]
+        [HttpDelete("delete-ticket/{userId}&{eventId}&{auxiliaryId}")]
         [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
-        public async Task<IActionResult> Delete([FromRoute] string userId, [FromRoute] string eventId)
+        public async Task<IActionResult> Delete([FromRoute] string userId, string eventId, string auxiliaryId)
         {
             try
             {
-                var (success, errorMessage, errorType) = _ticketManager.Delete(userId, eventId);
+                var (success, errorMessage, errorType) = _ticketManager.Delete(userId, eventId, auxiliaryId);
                 if (success)
                 {
                     return Ok("Ticket deleted successfully");

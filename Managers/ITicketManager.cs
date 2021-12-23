@@ -7,10 +7,10 @@ namespace TicketStore.Managers
 {
     public interface ITicketManager
     {
-        Ticket GetTicketById(string userId, string eventId);
+        Ticket GetTicketById(string userId, string eventId, string auxiliaryId);
 
         (TicketResponseModel resTicket, string errorMessage, string errorType) GetTicketResponseById(string userId,
-            string eventId);
+            string eventId, string auxiliaryId);
 
         (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetTicketsResponse();
 
@@ -22,6 +22,6 @@ namespace TicketStore.Managers
 
         (bool success, string errorMessage, string errorType) Create(TicketModel model);
         (bool success, string errorMessage, string errorType) Update(TicketModel model);
-        (bool success, string errorMessage, string errorType) Delete(string userId, string eventId);
+        (bool success, string errorMessage, string errorType) Delete(string userId, string eventId, string auxiliaryId);
     }
 }

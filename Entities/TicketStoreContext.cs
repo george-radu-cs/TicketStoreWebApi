@@ -31,7 +31,7 @@ namespace TicketStore.Entities
             builder.Entity<Event>()
                 .HasOne(e => e.TicketTypes);
 
-            builder.Entity<Ticket>().HasKey(t => new { t.UserId, t.EventId });
+            builder.Entity<Ticket>().HasKey(t => new { t.UserId, t.EventId, t.AuxiliaryId });
 
             builder.Entity<Ticket>()
                 .HasOne(t => t.User)
