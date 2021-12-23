@@ -8,8 +8,10 @@ namespace TicketStore.Entities
     public class TicketStoreContext : IdentityDbContext<User, Role, string, IdentityUserClaim<string>, UserRole,
         IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>
     {
-        public TicketStoreContext(DbContextOptions<TicketStoreContext> options) : base(options) {}
-        
+        public TicketStoreContext(DbContextOptions<TicketStoreContext> options) : base(options)
+        {
+        }
+
         public DbSet<Event> Events { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<TicketTypes> EventTicketTypes { get; set; }
@@ -45,7 +47,7 @@ namespace TicketStore.Entities
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId);
-            
+
             builder.Entity<Review>()
                 .HasOne(r => r.Event)
                 .WithMany(e => e.Reviews)

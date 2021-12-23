@@ -62,13 +62,7 @@ namespace TicketStore
                 });
             });
 
-            // connection to database
-            var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
-            if (connectionString == null)
-            {
-                Environment.Exit(-1);
-            }
-
+            var connectionString = Configuration.GetSection("Database").GetSection("ConnectionString").Get<string>();
             services.AddDbContext<TicketStoreContext>(options => options.UseSqlServer(connectionString));
 
             services.AddIdentity<User, Role>().AddEntityFrameworkStores<TicketStoreContext>();
