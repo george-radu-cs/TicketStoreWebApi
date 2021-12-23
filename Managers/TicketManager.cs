@@ -15,23 +15,23 @@ namespace TicketStore.Managers
     {
         private readonly ITicketRepository _ticketRepository;
 
-        public Ticket GetTicketById(string userId, string eventId)
+        public Ticket GetTicketById(string userId, string eventId, string auxiliaryId)
         {
             var ticket = _ticketRepository.GetTicketsWithBuyerAndEventIQueryable()
-                .FirstOrDefault(t => t.UserId == userId && t.EventId == eventId);
+                .FirstOrDefault(t => t.UserId == userId && t.EventId == eventId && t.AuxiliaryId == auxiliaryId);
 
             return ticket;
         }
 
         public (TicketResponseModel resTicket, string errorMessage, string errorType) GetTicketResponseById(
-            string userId, string eventId)
+            string userId, string eventId, string auxiliaryId)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
                 return (resTicket: null, errorMessage: "Id required", errorType: ErrorTypes.UserFault);
             }
 
-            var ticket = GetTicketById(userId, eventId);
+            var ticket = GetTicketById(userId, eventId, auxiliaryId);
             if (ticket == null)
             {
                 return (resTicket: null, errorMessage: "Ticket not found", errorType: ErrorTypes.NotFound);
@@ -117,13 +117,13 @@ namespace TicketStore.Managers
 
         public (bool success, string errorMessage, string errorType) Update(TicketModel model)
         {
-            var (isValid, validationErrorMessage) = Validations.ValidateTicket(model);
+            var (isValid, validationErrorMessage) = Validations.ValidateTicket(model, true);
             if (!isValid)
             {
                 return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
             }
 
-            var ticketToUpdate = GetTicketById(model.UserId, model.EventId);
+            var ticketToUpdate = GetTicketById(model.UserId, model.EventId, model.AuxiliaryId);
             if (ticketToUpdate == null)
             {
                 return (success: false, errorMessage: "The Ticket doesn't exists", errorType: ErrorTypes.UserFault);
@@ -138,14 +138,14 @@ namespace TicketStore.Managers
             return (success: true, errorMessage: null, errorType: null);
         }
 
-        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId)
+        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId, string auxiliaryId)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
                 return (success: false, errorMessage: "Id is required", errorType: ErrorTypes.UserFault);
             }
 
-            var ticketToDelete = GetTicketById(userId, eventId);
+            var ticketToDelete = GetTicketById(userId, eventId, auxiliaryId);
             if (ticketToDelete == null)
             {
                 return (success: false, errorMessage: "The Ticket doesn't exists", errorType: ErrorTypes.UserFault);

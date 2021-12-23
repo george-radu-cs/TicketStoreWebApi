@@ -297,6 +297,11 @@ namespace TicketStore.Utils
                 return (isValid: false, errorMessage: "Error: The EventId is required");
             }
 
+            if (isEdit && ticketToValidate.AuxiliaryId.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The AuxiliaryId is required");
+            }
+
             if (ticketToValidate.TicketType.IsNullOrEmpty())
             {
                 return (isValid: false, errorMessage: "Error: The TicketType is required");
@@ -314,11 +319,6 @@ namespace TicketStore.Utils
             if (ticketToValidate.Price.IsNullOrEmpty())
             {
                 return (isValid: false, errorMessage: "Error: The Price is required");
-            }
-
-            if (isEdit)
-            {
-                // TODO ticket validation after changing id
             }
 
             return (isValid: true, errorMessage: null);
