@@ -327,9 +327,14 @@ namespace TicketStore.Utils
         public static (bool isValid, string errorMessage) ValidateReview(ReviewModel reviewToValidate,
             bool isEdit = false)
         {
-            if (isEdit && reviewToValidate.Id.IsNullOrEmpty())
+            if (reviewToValidate.UserId.IsNullOrEmpty())
             {
-                return (isValid: false, errorMessage: "Error: The Review Id is required.");
+                return (isValid: false, errorMessage: "Error: The UserId is required.");
+            }
+
+            if (reviewToValidate.EventId.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The EventId is required.");
             }
 
             if (reviewToValidate.Title.IsNullOrEmpty())
@@ -356,19 +361,6 @@ namespace TicketStore.Utils
             if (!RatingRegex.IsMatch(reviewToValidate.Rating))
             {
                 return (isValid: false, errorMessage: "Error: The Rating is invalid. Valid types: 1, 6.9, 4.20");
-            }
-
-            if (isEdit)
-            {
-                if (reviewToValidate.UserId.IsNullOrEmpty())
-                {
-                    return (isValid: false, errorMessage: "Error: The UserId is required.");
-                }
-
-                if (reviewToValidate.EventId.IsNullOrEmpty())
-                {
-                    return (isValid: false, errorMessage: "Error: The EventId is required.");
-                }
             }
 
             return (isValid: true, errorMessage: null);

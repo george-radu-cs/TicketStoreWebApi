@@ -90,7 +90,8 @@ namespace TicketStore.Utils
         {
             return new ReviewResponseModel
             {
-                Id = reviewToConvert.Id,
+                UserId = reviewToConvert.UserId,
+                EventId = reviewToConvert.EventId,
                 Title = reviewToConvert.Title,
                 Message = reviewToConvert.Message,
                 Rating = reviewToConvert.Rating,

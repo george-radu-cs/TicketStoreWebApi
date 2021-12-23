@@ -20,23 +20,23 @@ namespace TicketStore.Managers
             _reviewRepository = reviewRepository;
         }
 
-        public Review GetReviewById(string id)
+        public Review GetReviewById(string userId, string eventId)
         {
             var review = _reviewRepository.GetReviewsWithUserAndEventIQueryable()
-                .FirstOrDefault(r => r.Id == id);
+                .FirstOrDefault(r => r.UserId == userId && r.EventId == eventId);
 
             return review;
         }
 
-        public (ReviewResponseModel resReview, string errorMessage, string errorType) GetReviewResponseById(string id)
+        public (ReviewResponseModel resReview, string errorMessage, string errorType) GetReviewResponseById(
+            string userId, string eventId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
                 return (resReview: null, errorMessage: "The Review's Id is required", errorType: ErrorTypes.UserFault);
             }
 
-            var review = _reviewRepository.GetReviewsWithUserAndEventIQueryable()
-                .FirstOrDefault(r => r.Id == id);
+            var review = GetReviewById(userId, eventId);
             if (review == null)
             {
                 return (resReview: null, errorMessage: "Review not found", ErrorTypes.NotFound);
@@ -134,7 +134,7 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
             }
 
-            var reviewToUpdate = GetReviewById(model.Id);
+            var reviewToUpdate = GetReviewById(model.UserId, model.EventId);
             if (reviewToUpdate == null)
             {
                 return (success: false, errorMessage: "The Review doesn't exists", errorType: ErrorTypes.UserFault);
@@ -150,14 +150,14 @@ namespace TicketStore.Managers
             return (success: true, errorMessage: null, errorType: null);
         }
 
-        public (bool success, string errorMessage, string errorType) Delete(string id)
+        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
                 return (success: false, errorMessage: "Review Id is required", errorType: ErrorTypes.UserFault);
             }
 
-            var reviewToDelete = GetReviewById(id);
+            var reviewToDelete = GetReviewById(userId, eventId);
             if (reviewToDelete == null)
             {
                 return (success: false, errorMessage: "Review doesn't exists", errorType: ErrorTypes.UserFault);
