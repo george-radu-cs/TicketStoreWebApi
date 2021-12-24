@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TicketStore.Models
 {
@@ -15,5 +16,6 @@ namespace TicketStore.Models
         public string OrganizerId { get; set; }
         public LocationModel Location { get; set; }
         public TicketTypesModels TicketTypes { get; set; }
+        public virtual ICollection<GuestModel> Guests { get; set; }
     }
 }

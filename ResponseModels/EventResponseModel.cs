@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TicketStore.ResponseModels
 {
@@ -15,5 +16,6 @@ namespace TicketStore.ResponseModels
         public LocationResponseModel Location { get; set; }
         public TicketTypesResponseModel TicketTypes { get; set; }
         public UserResponseModel Organizer { get; set; }
+        public virtual ICollection<GuestResponseModel> Guests { get; set; }
     }
 }

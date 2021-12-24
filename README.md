@@ -43,19 +43,22 @@ VALUES (3, 'Organizer', 'ORGANIZER', NULL)
 Basic features:
 
 - [x] authentication
-- [ ] create all tables in db
+- [x] create all tables in db
 - [x] add authentication controller
 - [x] add event controller
 - [x] add reviews controller
 - [x] add ticket controller
 - [x] relation one-to-one
-- [ ] relation one-to-many
+- [x] relation one-to-many
 - [x] relation many-to-many
 - [x] add authorization for endpoints
 - [x] input validations for all methods
 - [x] add response models to now return all types of data to web
 - [x] change returning https codes and error messages for all endpoints
 - [x] enhance password encryption by adding some random key from .env
+- [ ] add method to get the current user
+- [ ] move the conversions from inputModels to EntityModel in utils
+- [ ] after UI modify endpoints to filter data
 
 To be added after ALL basic features are done and have more time left
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TicketStore.Entities;
 using TicketStore.ResponseModels;
@@ -21,6 +22,22 @@ namespace TicketStore.Utils
                 EventsCreated = new Collection<EventResponseModel>(),
                 TicketsBought = new Collection<TicketResponseModel>(),
                 Reviews = new Collection<ReviewResponseModel>(),
+            };
+        }
+
+        private static GuestResponseModel ConvertToGuestResponseModel(Guest guestToConvert)
+        {
+            return new GuestResponseModel
+            {
+                Id = guestToConvert.Id,
+                FirstName = guestToConvert.FirstName,
+                LastName = guestToConvert.LastName,
+                SceneName = guestToConvert.SceneName,
+                Description = guestToConvert.Description,
+                Category = guestToConvert.Category,
+                Genre = guestToConvert.Genre,
+                Age = guestToConvert.Age,
+                EventId = guestToConvert.EventId,
             };
         }
 
@@ -73,16 +90,23 @@ namespace TicketStore.Utils
                 Location = null,
                 TicketTypes = null,
                 Organizer = null,
+                Guests = new List<GuestResponseModel>()
             };
         }
 
-        public static EventResponseModel ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(
+        public static EventResponseModel ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(
             Event eventToConvert)
         {
             var eventResponse = ConvertToEventResponseModel(eventToConvert);
             eventResponse.Location = ConvertToLocationResponseModel(eventToConvert.Location);
             eventResponse.TicketTypes = ConvertToTicketTypesResponseModel(eventToConvert.TicketTypes);
             eventResponse.Organizer = ConvertToUserResponseModel(eventToConvert.Organizer);
+            eventResponse.Guests = new List<GuestResponseModel>();
+            foreach (var guestToConvert in eventToConvert.Guests)
+            {
+                eventResponse.Guests.Add(ConvertToGuestResponseModel(guestToConvert));
+            }
+
             return eventResponse;
         }
 
