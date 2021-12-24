@@ -110,18 +110,7 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
             }
 
-            var date = DateTime.Now.ToUniversalTime();
-            var newReview = new Review
-            {
-                Title = model.Title,
-                Message = model.Message,
-                Rating = model.Rating,
-                CreatedAt = date,
-                UpdatedAt = date,
-                UserId = model.UserId,
-                EventId = model.EventId,
-            };
-
+            var newReview = EntityConversions.ConvertToReviewEntity(model);
             _reviewRepository.Create(newReview);
             return (success: true, errorMessage: null, errorType: null);
         }
@@ -140,13 +129,8 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: "The Review doesn't exists", errorType: ErrorTypes.UserFault);
             }
 
-            var date = DateTime.Now.ToUniversalTime();
-            reviewToUpdate.Title = model.Title;
-            reviewToUpdate.Message = model.Message;
-            reviewToUpdate.Rating = model.Rating;
-            reviewToUpdate.UpdatedAt = date;
-
-            _reviewRepository.Update(reviewToUpdate);
+            var updatedReview = EntityConversions.ConvertToReviewEntity(model, true, reviewToUpdate);
+            _reviewRepository.Update(updatedReview);
             return (success: true, errorMessage: null, errorType: null);
         }
 

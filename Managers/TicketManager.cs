@@ -100,17 +100,7 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
             }
 
-            var date = DateTime.Now.ToUniversalTime();
-            var newTicket = new Ticket
-            {
-                UserId = model.UserId,
-                EventId = model.EventId,
-                TicketType = model.TicketType,
-                Price = model.Price,
-                CreatedAt = date,
-                UpdatedAt = date,
-            };
-
+            var newTicket = EntityConversions.ConvertToTicketEntity(model);
             _ticketRepository.Create(newTicket);
             return (success: true, errorMessage: null, errorType: null);
         }
@@ -129,12 +119,8 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: "The Ticket doesn't exists", errorType: ErrorTypes.UserFault);
             }
 
-            var date = DateTime.Now.ToUniversalTime();
-            ticketToUpdate.TicketType = model.TicketType;
-            ticketToUpdate.Price = model.Price;
-            ticketToUpdate.UpdatedAt = date;
-
-            _ticketRepository.Update(ticketToUpdate);
+            var updatedTicket = EntityConversions.ConvertToTicketEntity(model, true, ticketToUpdate);
+            _ticketRepository.Update(updatedTicket);
             return (success: true, errorMessage: null, errorType: null);
         }
 
