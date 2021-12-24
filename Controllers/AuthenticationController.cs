@@ -1,7 +1,11 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
 using TicketStore.Utils;
@@ -65,6 +69,44 @@ namespace TicketStore.Controllers
             catch (Exception e)
             {
                 return BadRequest($"SignUp failed. Error message: {e.Message}");
+            }
+        }
+
+        [HttpGet("user")]
+        [Authorize(Policy = AuthorizationRoles.Anyone)]
+        public async Task<IActionResult> GetUser()
+        {
+            try
+            {
+                if (User.Identity is not ClaimsIdentity claimsIdentity)
+                {
+                    return BadRequest();
+                }
+
+                var emailAddressClaim = claimsIdentity.Claims
+                    .FirstOrDefault(c => c.Type.Contains("emailaddress"));
+                if (emailAddressClaim == null)
+                {
+                    return BadRequest();
+                }
+
+                // get the current user info
+                var (user, errorMessage, errorType) = await _authenticationManager.GetUser(emailAddressClaim.Value);
+
+                if (user != null)
+                {
+                    return Ok(user);
+                }
+
+                return errorType switch
+                {
+                    "USER" => BadRequest($"Couldn't get the current user info. Error message: {errorMessage}"),
+                    "SERVER" or _ => StatusCode(StatusCodes.Status500InternalServerError),
+                };
+            }
+            catch (Exception e)
+            {
+                return BadRequest($"Couldn't get the current user. Error message: {e.Message}");
             }
         }
     }

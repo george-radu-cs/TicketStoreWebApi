@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using TicketStore.Entities;
 using TicketStore.Models;
+using TicketStore.ResponseModels;
 using TicketStore.Utils;
 
 namespace TicketStore.Managers
@@ -136,6 +137,17 @@ namespace TicketStore.Managers
             return token == null
                 ? (token: null, errorMessage: "Error: Couldn't create the jwt token.", errorType: ErrorTypes.ServerFault)
                 : (token: new TokenModel { Token = token }, errorMessage: "", errorType: "");
+        }
+
+        public async Task<(UserResponseModel user, string errorMessage, string errorType)> GetUser(string userEmail)
+        {
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return (user: null, errorMessage: "Error: User doesn't exists.", errorType: ErrorTypes.UserFault);
+            }
+            
+            return (user: ResponseConversions.ConvertToUserResponseModel(user), errorMessage: null, errorType: null);
         }
     }
 }
