@@ -420,7 +420,8 @@ namespace TicketStore.Utils
             if (float.Parse(reviewToValidate.Rating) is < 0 or > 5)
             {
                 return (isValid: false,
-                    errorMessage: "Error: The Rating must be a string's representation of a float with 2 digits.");
+                    errorMessage:
+                    "Error: The Rating must be a string's representation of a float with 2 digits in the range [0,5].");
             }
 
             if (!RatingRegex.IsMatch(reviewToValidate.Rating))

@@ -46,20 +46,7 @@ namespace TicketStore.Managers
             }
 
             // create the model to save in database
-            var date = DateTime.Now.ToUniversalTime();
-            var user = new User
-            {
-                FirstName = signUpUserModel.FirstName,
-                LastName = signUpUserModel.LastName,
-                Email = signUpUserModel.Email,
-                UserName = signUpUserModel.Email,
-                PhoneNumber = signUpUserModel.PhoneNumber,
-                PhonePrefix = signUpUserModel.PhonePrefix,
-                Age = signUpUserModel.Age,
-                IsStudent = signUpUserModel.IsStudent,
-                CreatedAt = date,
-                UpdatedAt = date,
-            };
+            var user = EntityConversions.ConvertToUserEntity(signUpUserModel);
 
             // get from env the password enhancers to create the password
             var (passEnhancerBefore, passEnhancerAfter, isPassValid) = GetPasswordEnhancers().Result;

@@ -93,67 +93,7 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
             }
 
-            // TODO move later all the conversions from InputModel to EntityModel
-            // get the date now for all tables
-            var date = DateTime.Now.ToUniversalTime();
-            var newLocation = new Location
-            {
-                BuildingName = model.Location.BuildingName,
-                AddressFullName = model.Location.AddressFullName,
-                Locality = model.Location.Locality,
-                State = model.Location.State,
-                StateCode = model.Location.StateCode,
-                Country = model.Location.Country,
-                CountryCode = model.Location.CountryCode,
-                PostalCode = model.Location.PostalCode,
-                Latitude = model.Location.Latitude,
-                Longitude = model.Location.Longitude,
-                GeocodeAccuracy = model.Location.GeocodeAccuracy,
-                CreatedAt = date,
-                UpdatedAt = date,
-            };
-            var newTicketTypes = new TicketTypes
-            {
-                NumberStandardTickets = model.TicketTypes.NumberStandardTickets,
-                PriceStandardTicket = model.TicketTypes.PriceStandardTicket,
-                NumberVipTickets = model.TicketTypes.NumberVipTickets,
-                PriceVipTicket = model.TicketTypes.PriceVipTicket,
-                PriceChildTicket = model.TicketTypes.PriceChildTicket,
-                PriceStudentTicket = model.TicketTypes.PriceStudentTicket,
-                PriceCurrency = model.TicketTypes.PriceCurrency,
-                CreatedAt = date,
-                UpdatedAt = date,
-            };
-            var newGuests = model.Guests.Select(modelGuest => new Guest
-                {
-                    FirstName = modelGuest.FirstName,
-                    LastName = modelGuest.LastName,
-                    SceneName = modelGuest.SceneName,
-                    Description = modelGuest.Description,
-                    Category = modelGuest.Category,
-                    Genre = modelGuest.Genre,
-                    Age = modelGuest.Age,
-                    CreatedAt = date,
-                    UpdatedAt = date,
-                })
-                .ToList();
-            var newEvent = new Event
-            {
-                Name = model.Name,
-                ShortName = model.ShortName,
-                Description = model.Description,
-                StartDate = model.StartDate,
-                EndDate = model.EndDate,
-                Category = model.Category,
-                Genre = model.Genre,
-                OrganizerId = model.OrganizerId,
-                Location = newLocation,
-                TicketTypes = newTicketTypes,
-                Guests = newGuests,
-                CreatedAt = date,
-                UpdatedAt = date,
-            };
-
+            var newEvent = EntityConversions.ConvertToEventEntity(model);
             _eventRepository.Create(newEvent);
             return (success: true, errorMessage: null, errorType: null);
         }
@@ -172,61 +112,12 @@ namespace TicketStore.Managers
                 return (success: false, errorMessage: "The Event doesn't exists.", errorType: ErrorTypes.UserFault);
             }
 
-            // the updated date will be changed
-            var updatedDate = DateTime.Now.ToUniversalTime();
-
-            // update event's location data
-            eventToUpdate.Location.BuildingName = model.Location.BuildingName;
-            eventToUpdate.Location.AddressFullName = model.Location.AddressFullName;
-            eventToUpdate.Location.Locality = model.Location.Locality;
-            eventToUpdate.Location.State = model.Location.State;
-            eventToUpdate.Location.StateCode = model.Location.StateCode;
-            eventToUpdate.Location.Country = model.Location.Country;
-            eventToUpdate.Location.CountryCode = model.Location.CountryCode;
-            eventToUpdate.Location.PostalCode = model.Location.PostalCode;
-            eventToUpdate.Location.Latitude = model.Location.Latitude;
-            eventToUpdate.Location.Longitude = model.Location.Longitude;
-            eventToUpdate.Location.GeocodeAccuracy = model.Location.GeocodeAccuracy;
-            eventToUpdate.Location.UpdatedAt = updatedDate;
-
-            // update ticket types data
-            eventToUpdate.TicketTypes.NumberStandardTickets = model.TicketTypes.NumberStandardTickets;
-            eventToUpdate.TicketTypes.PriceStandardTicket = model.TicketTypes.PriceStandardTicket;
-            eventToUpdate.TicketTypes.NumberVipTickets = model.TicketTypes.NumberVipTickets;
-            eventToUpdate.TicketTypes.PriceVipTicket = model.TicketTypes.PriceVipTicket;
-            eventToUpdate.TicketTypes.PriceChildTicket = model.TicketTypes.PriceChildTicket;
-            eventToUpdate.TicketTypes.PriceStudentTicket = model.TicketTypes.PriceStudentTicket;
-            eventToUpdate.TicketTypes.PriceCurrency = model.TicketTypes.PriceCurrency;
-            eventToUpdate.TicketTypes.UpdatedAt = updatedDate;
-
             // get the list of old guests to remove later
             var oldGuests = eventToUpdate.Guests;
-            // update guests list
-            eventToUpdate.Guests = model.Guests.Select(modelGuest => new Guest
-            {
-                FirstName = modelGuest.FirstName,
-                LastName = modelGuest.LastName,
-                SceneName = modelGuest.SceneName,
-                Description = modelGuest.Description,
-                Category = modelGuest.Category,
-                Genre = modelGuest.Genre,
-                Age = modelGuest.Age,
-                EventId = modelGuest.EventId,
-                CreatedAt = updatedDate,
-                UpdatedAt = updatedDate,
-            }).ToList();
+            // get the updatedEvent from the model and oldEvent
+            var updatedEvent = EntityConversions.ConvertToEventEntity(model, true, eventToUpdate);
 
-            // update event data
-            eventToUpdate.Name = model.Name;
-            eventToUpdate.ShortName = model.ShortName;
-            eventToUpdate.Description = model.Description;
-            eventToUpdate.StartDate = model.StartDate;
-            eventToUpdate.EndDate = model.EndDate;
-            eventToUpdate.Category = model.Category;
-            eventToUpdate.Genre = model.Genre;
-            eventToUpdate.UpdatedAt = updatedDate;
-
-            _eventRepository.Update(eventToUpdate, oldGuests);
+            _eventRepository.Update(updatedEvent, oldGuests);
             return (success: true, errorMessage: null, errorType: null);
         }
 
