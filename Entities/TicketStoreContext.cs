@@ -15,6 +15,7 @@ namespace TicketStore.Entities
         public DbSet<Event> Events { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<TicketTypes> EventTicketTypes { get; set; }
+        public DbSet<Guest> Guests { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
@@ -31,6 +32,10 @@ namespace TicketStore.Entities
             builder.Entity<Event>()
                 .HasOne(e => e.TicketTypes);
 
+            builder.Entity<Event>()
+                .HasMany(e => e.Guests)
+                .WithOne(i => i.Event);
+
             builder.Entity<Ticket>().HasKey(t => new { t.UserId, t.EventId, t.AuxiliaryId });
 
             builder.Entity<Ticket>()
@@ -44,7 +49,7 @@ namespace TicketStore.Entities
                 .HasForeignKey(t => t.EventId);
 
             builder.Entity<Review>().HasKey(r => new { r.UserId, r.EventId });
-            
+
             builder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)

@@ -23,7 +23,7 @@ namespace TicketStore.Managers
         public Event GetEventById(string id)
         {
             // when getting an event by id get all info about an event
-            // organizer, ticket types, location, invitates, teams
+            // organizer, ticket types, location, guests, teams
             var resEvent = _eventRepository.GetEventsWithAllDataIQueryable()
                 .FirstOrDefault(e => e.Id == id);
 
@@ -44,7 +44,7 @@ namespace TicketStore.Managers
                 return (resEvent: null, errorMessage: "Event not found", errorType: ErrorTypes.NotFound);
             }
 
-            return (resEvent: ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(responseEvent),
+            return (resEvent: ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(responseEvent),
                 errorMessage: null, errorType: null);
         }
 
@@ -52,7 +52,7 @@ namespace TicketStore.Managers
         {
             // we want a list with events with their organizer
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
-                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(e))
+                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(e))
                 .ToList();
 
             if (events.IsNullOrEmpty())
@@ -73,7 +73,7 @@ namespace TicketStore.Managers
 
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
                 .Where(e => e.OrganizerId == organizerId)
-                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizer(e))
+                .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(e))
                 .ToList();
 
             if (events.IsNullOrEmpty())
@@ -124,6 +124,19 @@ namespace TicketStore.Managers
                 CreatedAt = date,
                 UpdatedAt = date,
             };
+            var newGuests = model.Guests.Select(modelGuest => new Guest
+                {
+                    FirstName = modelGuest.FirstName,
+                    LastName = modelGuest.LastName,
+                    SceneName = modelGuest.SceneName,
+                    Description = modelGuest.Description,
+                    Category = modelGuest.Category,
+                    Genre = modelGuest.Genre,
+                    Age = modelGuest.Age,
+                    CreatedAt = date,
+                    UpdatedAt = date,
+                })
+                .ToList();
             var newEvent = new Event
             {
                 Name = model.Name,
@@ -136,6 +149,7 @@ namespace TicketStore.Managers
                 OrganizerId = model.OrganizerId,
                 Location = newLocation,
                 TicketTypes = newTicketTypes,
+                Guests = newGuests,
                 CreatedAt = date,
                 UpdatedAt = date,
             };
@@ -185,6 +199,23 @@ namespace TicketStore.Managers
             eventToUpdate.TicketTypes.PriceCurrency = model.TicketTypes.PriceCurrency;
             eventToUpdate.TicketTypes.UpdatedAt = updatedDate;
 
+            // get the list of old guests to remove later
+            var oldGuests = eventToUpdate.Guests;
+            // update guests list
+            eventToUpdate.Guests = model.Guests.Select(modelGuest => new Guest
+            {
+                FirstName = modelGuest.FirstName,
+                LastName = modelGuest.LastName,
+                SceneName = modelGuest.SceneName,
+                Description = modelGuest.Description,
+                Category = modelGuest.Category,
+                Genre = modelGuest.Genre,
+                Age = modelGuest.Age,
+                EventId = modelGuest.EventId,
+                CreatedAt = updatedDate,
+                UpdatedAt = updatedDate,
+            }).ToList();
+
             // update event data
             eventToUpdate.Name = model.Name;
             eventToUpdate.ShortName = model.ShortName;
@@ -195,7 +226,7 @@ namespace TicketStore.Managers
             eventToUpdate.Genre = model.Genre;
             eventToUpdate.UpdatedAt = updatedDate;
 
-            _eventRepository.Update(eventToUpdate);
+            _eventRepository.Update(eventToUpdate, oldGuests);
             return (success: true, errorMessage: null, errorType: null);
         }
 

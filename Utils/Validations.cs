@@ -121,6 +121,62 @@ namespace TicketStore.Utils
             return (isValid: true, errorMessage: null);
         }
 
+        private static (bool isValid, string errorMessage) ValidateGuest(GuestModel guestToValidate,
+            bool isEdit = false)
+        {
+            if (guestToValidate.FirstName.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "The FirstName is required.");
+            }
+
+            if (!NameRegex.IsMatch(guestToValidate.FirstName))
+            {
+                return (isValid: false, errorMessage: "Error: The FirstName must contain only letters.");
+            }
+
+            if (guestToValidate.LastName.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "The LastName is required.");
+            }
+
+            if (!NameRegex.IsMatch(guestToValidate.LastName))
+            {
+                return (isValid: false, errorMessage: "Error: The LastName must contain only letters.");
+            }
+
+            if (guestToValidate.SceneName.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The SceneName is required.");
+            }
+
+            if (guestToValidate.Description.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The Description is required.");
+            }
+
+            if (guestToValidate.Category.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The Category is required.");
+            }
+
+            if (guestToValidate.Genre.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The Genre is required");
+            }
+
+            if (guestToValidate.Age <= 0)
+            {
+                return (isValid: false, errorMessage: "Error: The Age must be a positive integer.");
+            }
+
+            if (isEdit && guestToValidate.EventId.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "Error: The EventId is required.");
+            }
+
+            return (isValid: true, errorMessage: null);
+        }
+
         private static (bool isValid, string errorMessage) ValidateLocation(LocationModel locationToValidate)
         {
             if (locationToValidate.BuildingName.IsNullOrEmpty())
@@ -278,6 +334,15 @@ namespace TicketStore.Utils
             if (!isTicketTypesValid)
             {
                 return (isValid: false, errorMessage: ticketTypesErrorMessage);
+            }
+
+            foreach (var guestToValidate in eventToValidate.Guests)
+            {
+                var (isGuestValid, guestErrorMessage) = ValidateGuest(guestToValidate, isEdit);
+                if (!isGuestValid)
+                {
+                    return (isValid: false, errorMessage: guestErrorMessage);
+                }
             }
 
             // the event is valid

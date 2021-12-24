@@ -23,12 +23,13 @@ namespace TicketStore.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public string TicketTypesId { get;set; }
+        public string TicketTypesId { get; set; }
         public virtual TicketTypes TicketTypes { get; set; }
         public string LocationId { get; set; }
         public virtual Location Location { get; set; }
         public string OrganizerId { get; set; }
         public virtual User Organizer { get; set; }
+        public virtual ICollection<Guest> Guests { get; set; }
         public virtual ICollection<Ticket> TicketsSold { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
     }
