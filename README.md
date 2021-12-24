@@ -56,7 +56,7 @@ Basic features:
 - [x] add response models to now return all types of data to web
 - [x] change returning https codes and error messages for all endpoints
 - [x] enhance password encryption by adding some random key from .env
-- [ ] add method to get the current user
+- [x] add method to get the current user
 - [ ] move the conversions from inputModels to EntityModel in utils
 - [ ] after UI modify endpoints to filter data
 

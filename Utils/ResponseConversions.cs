@@ -7,7 +7,7 @@ namespace TicketStore.Utils
 {
     public static class ResponseConversions
     {
-        private static UserResponseModel ConvertToUserResponseModel(User userToConvert)
+        public static UserResponseModel ConvertToUserResponseModel(User userToConvert)
         {
             return new UserResponseModel
             {
