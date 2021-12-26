@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
@@ -133,7 +134,7 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _ticketManager.Create(ticketModel);
                 if (success)
                 {
-                    return Created("success", "Ticket created successfully");
+                    return Created("success", JsonConvert.SerializeObject("Ticket created successfully"));
                 }
 
                 return errorType switch

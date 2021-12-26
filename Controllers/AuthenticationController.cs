@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
@@ -31,7 +32,7 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = await _authenticationManager.SignUp(model);
                 if (success) // the user was created successfully
                 {
-                    return Created("success", "User created successfully");
+                    return Created("success", JsonConvert.SerializeObject("User created successfully"));
                 }
 
                 return errorType switch

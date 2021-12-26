@@ -28,6 +28,13 @@ namespace TicketStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -148,7 +155,9 @@ namespace TicketStore
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TicketStore v1"));
             }
-
+            
+            app.UseCors("CorsPolicy");
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
