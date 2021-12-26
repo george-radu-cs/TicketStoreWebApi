@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TicketStore.Entities;
 using TicketStore.Managers;
 using TicketStore.Models;
@@ -105,7 +106,7 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _eventManager.Create(eventModel);
                 if (success)
                 {
-                    return Created("success", "Event created successfully");
+                    return Created("success", JsonConvert.SerializeObject("Event created successfully"));
                 }
 
                 return errorType switch
