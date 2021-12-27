@@ -11,6 +11,5 @@ namespace TicketStore.ResponseModels
         public string PriceVipTicket { get; set; }
         public string PriceChildTicket { get; set; }
         public string PriceStudentTicket { get; set; }
-        public DateTime BoughtTime { get; set; }
     }
 }

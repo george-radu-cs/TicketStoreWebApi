@@ -71,7 +71,6 @@ namespace TicketStore.Utils
                 PriceVipTicket = ticketTypesToConvert.PriceVipTicket,
                 PriceChildTicket = ticketTypesToConvert.PriceChildTicket,
                 PriceStudentTicket = ticketTypesToConvert.PriceStudentTicket,
-                BoughtTime = ticketTypesToConvert.UpdatedAt,
             };
         }
 
@@ -152,6 +151,7 @@ namespace TicketStore.Utils
                 AuxiliaryId = ticketToConvert.AuxiliaryId,
                 TicketType = ticketToConvert.TicketType,
                 Price = ticketToConvert.Price,
+                BoughtTime = ticketToConvert.UpdatedAt,
             };
         }
 
