@@ -1,3 +1,5 @@
+using System;
+
 namespace TicketStore.ResponseModels
 {
     public class TicketResponseModel
@@ -9,5 +11,6 @@ namespace TicketStore.ResponseModels
         public string Price { get; set; }
         public UserResponseModel Buyer { get; set; }
         public EventResponseModel Event { get; set; }
+        public DateTime BoughtTime { get; set; }
     }
 }

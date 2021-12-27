@@ -37,14 +37,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Getting ticket by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting ticket by id failed. Error message: {errorMessage}")),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the ticket. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the ticket. Error message: {e.Message}"));
             }
         }
 
@@ -62,14 +62,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't get the tickets. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets. Error message: {errorMessage}")),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the tickets. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets. Error message: {e.Message}"));
             }
         }
 
@@ -87,15 +87,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest(
-                        $"Couldn't get the user's tickets. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the user's tickets. Error message: {errorMessage}")),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the tickets bought by the user given. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets bought by the user given. Error message: {e.Message}"));
             }
         }
 
@@ -113,15 +112,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault =>
-                        BadRequest($"Couldn't get the event tickets. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the event tickets. Error message: {errorMessage}")),
                     ErrorTypes.NotFound => NotFound(),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the tickets for the event given. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets for the event given. Error message: {e.Message}"));
             }
         }
 
@@ -139,13 +137,13 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't create the ticket. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't create the ticket. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't create the ticket. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't create the ticket. Error message: {e.Message}"));
             }
         }
 
@@ -158,18 +156,18 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _ticketManager.Update(ticketModel);
                 if (success)
                 {
-                    return Ok("Ticket updated successfully");
+                    return Ok(JsonConvert.SerializeObject("Ticket updated successfully"));
                 }
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't update the ticket. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't update the ticket. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't update the ticket. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't update the ticket. Error message: {e.Message}"));
             }
         }
 
@@ -182,18 +180,18 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _ticketManager.Delete(userId, eventId, auxiliaryId);
                 if (success)
                 {
-                    return Ok("Ticket deleted successfully");
+                    return Ok(JsonConvert.SerializeObject("Ticket deleted successfully"));
                 }
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't delete the ticket. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't delete the ticket. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't delete the ticket. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't delete the ticket. Error message: {e.Message}"));
             }
         }
     }

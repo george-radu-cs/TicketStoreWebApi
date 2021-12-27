@@ -36,14 +36,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting review by id failed. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
                     _ => NotFound()
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the review. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the review. Error message: {e.Message}"));
             }
         }
 
@@ -62,14 +62,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't get the reviews. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the reviews. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
                     _ => NotFound()
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the reviews. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the reviews. Error message: {e.Message}"));
             }
         }
 
@@ -87,14 +87,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting review by id failed. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
                     _ => NotFound()
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the user's reviews. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the user's reviews. Error message: {e.Message}"));
             }
         }
 
@@ -112,14 +112,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Getting review by id failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting review by id failed. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
                     _ => NotFound()
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the event's reviews. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the event's reviews. Error message: {e.Message}"));
             }
         }
 
@@ -137,13 +137,13 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't create the review. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't create the review. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't create the review. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't create the review. Error message: {e.Message}"));
             }
         }
 
@@ -161,13 +161,13 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't update the review. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't update the review. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't update the review. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't update the review. Error message: {e.Message}"));
             }
         }
 
@@ -180,18 +180,18 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _reviewManager.Delete(userId, eventId);
                 if (success)
                 {
-                    return Ok("Review deleted successfully");
+                    return Ok(JsonConvert.SerializeObject("Review deleted successfully"));
                 }
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Couldn't delete the review. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't delete the review. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't delete the review. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't delete the review. Error message: {e.Message}"));
             }
         }
     }

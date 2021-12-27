@@ -37,14 +37,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"SignUp failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"SignUp failed. Error message: {errorMessage}")),
                     // for any other errors return 500 
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"SignUp failed. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"SignUp failed. Error message: {e.Message}"));
             }
         }
 
@@ -62,14 +62,14 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest($"Login failed. Error message: {errorMessage}"),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Login failed. Error message: {errorMessage}")),
                     // for any other errors return 500
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"SignUp failed. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"SignUp failed. Error message: {e.Message}"));
             }
         }
 
@@ -81,14 +81,14 @@ namespace TicketStore.Controllers
             {
                 if (User.Identity is not ClaimsIdentity claimsIdentity)
                 {
-                    return BadRequest();
+                    return BadRequest(JsonConvert.SerializeObject("JWT error"));
                 }
 
                 var emailAddressClaim = claimsIdentity.Claims
                     .FirstOrDefault(c => c.Type.Contains("emailaddress"));
                 if (emailAddressClaim == null)
                 {
-                    return BadRequest();
+                    return BadRequest(JsonConvert.SerializeObject("JWT error"));
                 }
 
                 // get the current user info
@@ -101,13 +101,13 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    "USER" => BadRequest($"Couldn't get the current user info. Error message: {errorMessage}"),
+                    "USER" => BadRequest(JsonConvert.SerializeObject($"Couldn't get the current user info. Error message: {errorMessage}")),
                     "SERVER" or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }
             catch (Exception e)
             {
-                return BadRequest($"Couldn't get the current user. Error message: {e.Message}");
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the current user. Error message: {e.Message}"));
             }
         }
     }
