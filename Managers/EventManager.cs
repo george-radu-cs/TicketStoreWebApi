@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using TicketStore.Entities;
 using TicketStore.Models;
 using TicketStore.Repositories;
+using TicketStore.ResponseModels;
 using TicketStore.Utils;
 using static TicketStore.Utils.ResponseConversions;
-using TicketTypes = TicketStore.Entities.TicketTypes;
 
 namespace TicketStore.Managers
 {
@@ -30,7 +29,7 @@ namespace TicketStore.Managers
             return resEvent;
         }
 
-        public (ResponseModels.EventResponseModel resEvent, string errorMessage, string errorType)
+        public (EventResponseModel resEvent, string errorMessage, string errorType)
             GetEventResponseById(string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -48,7 +47,7 @@ namespace TicketStore.Managers
                 errorMessage: null, errorType: null);
         }
 
-        public (List<ResponseModels.EventResponseModel> resEvents, string errorMessage, string errorType) GetEvents()
+        public (List<EventResponseModel> resEvents, string errorMessage, string errorType) GetEvents()
         {
             // we want a list with events with their organizer
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
@@ -63,7 +62,7 @@ namespace TicketStore.Managers
             return (resEvents: events, errorMessage: null, errorType: null);
         }
 
-        public (List<ResponseModels.EventResponseModel> resEvents, string errorMessage, string errorType)
+        public (List<EventResponseModel> resEvents, string errorMessage, string errorType)
             GetOrganizerEvents(string organizerId)
         {
             if (string.IsNullOrEmpty(organizerId))

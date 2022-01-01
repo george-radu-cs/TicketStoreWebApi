@@ -11,6 +11,8 @@ namespace TicketStore.Utils
         private static readonly Regex NameRegex = new(@"^[a-zA-Z ]+$");
         private static readonly Regex PhoneNumberRegex = new(@"^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$");
         private static readonly Regex RatingRegex = new(@"^[0-9](\.[0-9]{1,2})?$");
+        private static readonly Regex PositiveIntegerRegex = new(@"^[0-9]*$");
+        private static readonly Regex PositiveFloatRegex = new(@"^[^\-][0-9]*.?[0-9]{1,2}$");
 
         public static (bool isValid, string errorMessage) ValidateRegister(SignUpUserModel userToValidate)
         {
@@ -245,6 +247,11 @@ namespace TicketStore.Utils
                 return (isValid: false, errorMessage: "TicketTypes The PriceStandardTicket is required.");
             }
 
+            if (!PositiveFloatRegex.IsMatch(ticketTypesToValidate.PriceStandardTicket))
+            {
+                return (isValid: false, errorMessage: "TicketTypes The PriceStandardTicket is invalid.");
+            }
+
             // an event doesn't need to sell vip tickets, or other types of tickets
             if (ticketTypesToValidate.NumberVipTickets < 0)
             {
@@ -253,9 +260,29 @@ namespace TicketStore.Utils
 
             // the price of other types of tickets (other than standard) can have the value null to represent that the
             // event won't sell these types of tickets, so we'll check only for null
-            if (ticketTypesToValidate.NumberVipTickets > 0 && ticketTypesToValidate.PriceVipTicket.IsNullOrEmpty())
+            if (ticketTypesToValidate.NumberVipTickets > 0)
             {
-                return (isValid: false, errorMessage: "TicketTypes The PriceVipTicket is required.");
+                if (ticketTypesToValidate.PriceVipTicket.IsNullOrEmpty())
+                {
+                    return (isValid: false, errorMessage: "TicketTypes The PriceVipTicket is required.");
+                }
+
+                if (!PositiveFloatRegex.IsMatch(ticketTypesToValidate.PriceVipTicket))
+                {
+                    return (isValid: false, errorMessage: "TicketTypes The PriceVipTicket is invalid.");
+                }
+            }
+
+            if (!ticketTypesToValidate.PriceChildTicket.IsNullOrEmpty() &&
+                !PositiveFloatRegex.IsMatch(ticketTypesToValidate.PriceChildTicket))
+            {
+                return (isValid: false, errorMessage: "TicketTypes The PriceChildTicket is invalid.");
+            }
+
+            if (!ticketTypesToValidate.PriceStudentTicket.IsNullOrEmpty() &&
+                !PositiveFloatRegex.IsMatch(ticketTypesToValidate.PriceStudentTicket))
+            {
+                return (isValid: false, errorMessage: "TicketTypes The PriceStudentTicket is invalid.");
             }
 
             if (ticketTypesToValidate.PriceCurrency.IsNullOrEmpty())
@@ -381,6 +408,24 @@ namespace TicketStore.Utils
             if (ticketToValidate.Price.IsNullOrEmpty())
             {
                 return (isValid: false, errorMessage: "The Price is required");
+            }
+
+            if (!PositiveFloatRegex.IsMatch(ticketToValidate.Price))
+            {
+                return (isValid: false, errorMessage: "The Price is invalid.");
+            }
+
+            if (ticketToValidate.PriceCurrency.IsNullOrEmpty())
+            {
+                return (isValid: false, errorMessage: "The PriceCurrency is required.");
+            }
+
+            // the only accepted currencies are USD, EUR, GBT & RON
+            if (ticketToValidate.PriceCurrency != "USD" && ticketToValidate.PriceCurrency != "EUR" &&
+                ticketToValidate.PriceCurrency != "GBT" && ticketToValidate.PriceCurrency != "RON")
+            {
+                return (isValid: false,
+                    errorMessage: "The PriceCurrency is invalid. Valid types are: USD, EUR, GBT and RON");
             }
 
             return (isValid: true, errorMessage: null);

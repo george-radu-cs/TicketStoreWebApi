@@ -7,10 +7,13 @@ namespace TicketStore.Entities
     {
         public string UserId { get; set; }
         public string EventId { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string AuxiliaryId { get; set; }
+
         public string TicketType { get; set; }
         public string Price { get; set; }
+        public string PriceCurrency { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

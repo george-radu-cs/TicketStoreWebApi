@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
@@ -124,7 +123,8 @@ namespace TicketStore.Managers
             return (success: true, errorMessage: null, errorType: null);
         }
 
-        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId, string auxiliaryId)
+        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId,
+            string auxiliaryId)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
