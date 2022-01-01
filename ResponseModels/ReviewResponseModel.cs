@@ -1,3 +1,5 @@
+using System;
+
 namespace TicketStore.ResponseModels
 {
     public class ReviewResponseModel
@@ -7,6 +9,7 @@ namespace TicketStore.ResponseModels
         public string Title { get; set; }
         public string Message { get; set; }
         public string Rating { get; set; }
+        public DateTime Date { get; set; }
         public UserResponseModel User { get; set; }
         public EventResponseModel Event { get; set; }
     }

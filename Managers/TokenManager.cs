@@ -26,6 +26,7 @@ namespace TicketStore.Managers
             {
                 return null;
             }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
@@ -37,7 +38,7 @@ namespace TicketStore.Managers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddDays(100),
                 SigningCredentials = creds
             };
 

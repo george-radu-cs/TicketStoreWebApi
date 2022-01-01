@@ -186,6 +186,7 @@ namespace TicketStore.Utils
             resTicket.EventId = ticketToConvert.EventId;
             resTicket.TicketType = ticketToConvert.TicketType;
             resTicket.Price = ticketToConvert.Price;
+            resTicket.PriceCurrency = ticketToConvert.PriceCurrency;
             resTicket.UpdatedAt = date;
 
             return resTicket;

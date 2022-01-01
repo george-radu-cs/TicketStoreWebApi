@@ -9,6 +9,7 @@ namespace TicketStore.ResponseModels
         public string AuxiliaryId { get; set; }
         public string TicketType { get; set; }
         public string Price { get; set; }
+        public string PriceCurrency { get; set; }
         public UserResponseModel Buyer { get; set; }
         public EventResponseModel Event { get; set; }
         public DateTime BoughtTime { get; set; }

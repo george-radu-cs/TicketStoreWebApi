@@ -71,6 +71,7 @@ namespace TicketStore.Utils
                 PriceVipTicket = ticketTypesToConvert.PriceVipTicket,
                 PriceChildTicket = ticketTypesToConvert.PriceChildTicket,
                 PriceStudentTicket = ticketTypesToConvert.PriceStudentTicket,
+                PriceCurrency = ticketTypesToConvert.PriceCurrency,
             };
         }
 
@@ -86,6 +87,7 @@ namespace TicketStore.Utils
                 EndDate = eventToConvert.EndDate,
                 Category = eventToConvert.Category,
                 Genre = eventToConvert.Genre,
+                OrganizerId = eventToConvert.OrganizerId,
                 Location = null,
                 TicketTypes = null,
                 Organizer = null,
@@ -118,6 +120,7 @@ namespace TicketStore.Utils
                 Title = reviewToConvert.Title,
                 Message = reviewToConvert.Message,
                 Rating = reviewToConvert.Rating,
+                Date = reviewToConvert.UpdatedAt,
             };
         }
 
@@ -151,6 +154,7 @@ namespace TicketStore.Utils
                 AuxiliaryId = ticketToConvert.AuxiliaryId,
                 TicketType = ticketToConvert.TicketType,
                 Price = ticketToConvert.Price,
+                PriceCurrency = ticketToConvert.PriceCurrency,
                 BoughtTime = ticketToConvert.UpdatedAt,
             };
         }
