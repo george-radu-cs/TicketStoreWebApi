@@ -10,7 +10,7 @@ namespace TicketStore.Entities
         public string EventId { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
-        public string Rating { get; set; }
+        public int Rating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

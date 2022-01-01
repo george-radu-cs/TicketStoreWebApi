@@ -97,6 +97,31 @@ namespace TicketStore.Controllers
                 return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets bought by the user given. Error message: {e.Message}"));
             }
         }
+        
+        [HttpGet("buyer-tickets-for-event/{userId}&{eventId}")]
+        [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
+        public async Task<IActionResult> GetBuyerTicketsForAnEvent([FromRoute] string userId, string eventId)
+        {
+            try
+            {
+                var (resTickets, errorMessage, errorType) = _ticketManager.GetBuyerTicketsForAnEventResponse(userId, eventId);
+                if (resTickets != null)
+                {
+                    return Ok(resTickets);
+                }
+
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the user's tickets. Error message: {errorMessage}")),
+                    ErrorTypes.NotFound => NotFound(),
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
+                };
+            }
+            catch (Exception e)
+            {
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets bought by the user given. Error message: {e.Message}"));
+            }
+        }
 
         [HttpGet("event-tickets/{eventId}")]
         [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]

@@ -8,7 +8,7 @@ namespace TicketStore.ResponseModels
         public string EventId { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
-        public string Rating { get; set; }
+        public int Rating { get; set; }
         public DateTime Date { get; set; }
         public UserResponseModel User { get; set; }
         public EventResponseModel Event { get; set; }

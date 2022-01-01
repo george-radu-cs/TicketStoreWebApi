@@ -51,6 +51,7 @@ namespace TicketStore.Managers
         {
             // we want a list with events with their organizer
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
+                .OrderByDescending(e => e.UpdatedAt)
                 .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(e))
                 .ToList();
 
@@ -72,6 +73,7 @@ namespace TicketStore.Managers
 
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
                 .Where(e => e.OrganizerId == organizerId)
+                .OrderByDescending(e => e.UpdatedAt)
                 .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(e))
                 .ToList();
 
