@@ -128,8 +128,8 @@ namespace TicketStore.Utils
             resEvent.Name = eventToConvert.Name;
             resEvent.ShortName = eventToConvert.ShortName;
             resEvent.Description = eventToConvert.Description;
-            resEvent.StartDate = eventToConvert.StartDate;
-            resEvent.EndDate = eventToConvert.EndDate;
+            resEvent.StartDate = eventToConvert.StartDate.ToUniversalTime();
+            resEvent.EndDate = eventToConvert.EndDate.ToUniversalTime();
             resEvent.Category = eventToConvert.Category;
             resEvent.Genre = eventToConvert.Genre;
             resEvent.OrganizerId = eventToConvert.OrganizerId;

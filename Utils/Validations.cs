@@ -454,21 +454,9 @@ namespace TicketStore.Utils
                 return (isValid: false, errorMessage: "The Message is required.");
             }
 
-            if (reviewToValidate.Rating.IsNullOrEmpty())
+            if (reviewToValidate.Rating is < 0 or > 5)
             {
-                return (isValid: false, errorMessage: "The Rating is required.");
-            }
-
-            if (float.Parse(reviewToValidate.Rating) is < 0 or > 5)
-            {
-                return (isValid: false,
-                    errorMessage:
-                    "The Rating must be a string's representation of a float with 2 digits in the range [0,5].");
-            }
-
-            if (!RatingRegex.IsMatch(reviewToValidate.Rating))
-            {
-                return (isValid: false, errorMessage: "The Rating is invalid. Valid types: 1, 6.9, 4.20");
+                return (isValid: false, errorMessage: "The Rating must be an integer in the range [0,5].");
             }
 
             return (isValid: true, errorMessage: null);

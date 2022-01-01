@@ -156,7 +156,7 @@ namespace TicketStore.Controllers
                 var (success, errorMessage, errorType) = _reviewManager.Update(reviewModel);
                 if (success)
                 {
-                    return Ok("Review updated successfully");
+                    return Ok(JsonConvert.SerializeObject("Review updated successfully"));
                 }
 
                 return errorType switch

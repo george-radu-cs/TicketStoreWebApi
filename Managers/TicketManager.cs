@@ -48,6 +48,7 @@ namespace TicketStore.Managers
         public (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetTicketsResponse()
         {
             var tickets = _ticketRepository.GetTicketsIQueryable()
+                .OrderByDescending(t => t.UpdatedAt)
                 .Select(t => ConvertToTicketResponseModel(t))
                 .ToList();
 
@@ -64,6 +65,24 @@ namespace TicketStore.Managers
         {
             var tickets = _ticketRepository.GetTicketsWithEventIQueryable()
                 .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.UpdatedAt)
+                .Select(t => ConvertToTicketResponseModelWithEvent(t))
+                .ToList();
+
+            if (tickets.IsNullOrEmpty())
+            {
+                return (resTickets: null, errorMessage: "Tickets not found", errorType: ErrorTypes.NotFound);
+            }
+
+            return (resTickets: tickets, errorMessage: null, errorType: null);
+        }
+
+        public (List<TicketResponseModel> resTickets, string errorMessage, string errorType)
+            GetBuyerTicketsForAnEventResponse(string userId, string eventId)
+        {
+            var tickets = _ticketRepository.GetTicketsWithEventIQueryable()
+                .Where(t => t.UserId == userId && t.EventId == eventId)
+                .OrderByDescending(t => t.UpdatedAt)
                 .Select(t => ConvertToTicketResponseModelWithEvent(t))
                 .ToList();
 
@@ -80,6 +99,7 @@ namespace TicketStore.Managers
         {
             var tickets = _ticketRepository.GetTicketsWithBuyerIQueryable()
                 .Where(t => t.EventId == eventId)
+                .OrderByDescending(t => t.UpdatedAt)
                 .Select(t => ConvertToTicketResponseModelWithUser(t))
                 .ToList();
 

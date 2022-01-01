@@ -48,6 +48,7 @@ namespace TicketStore.Managers
         public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetReviewsResponse()
         {
             var reviews = _reviewRepository.GetReviewsIQueryable()
+                .OrderByDescending(r=>r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModel(r))
                 .ToList();
 
@@ -69,6 +70,7 @@ namespace TicketStore.Managers
 
             var reviews = _reviewRepository.GetReviewsWithEventIQueryable()
                 .Where(r => r.UserId == userId)
+                .OrderByDescending(r=>r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModelWithEvent(r))
                 .ToList();
 
@@ -90,6 +92,7 @@ namespace TicketStore.Managers
 
             var reviews = _reviewRepository.GetReviewsWithUserIQueryable()
                 .Where(r => r.EventId == eventId)
+                .OrderByDescending(r=>r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModelWithUser(r))
                 .ToList();
 
