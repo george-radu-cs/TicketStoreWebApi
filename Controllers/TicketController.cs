@@ -123,6 +123,30 @@ namespace TicketStore.Controllers
             }
         }
 
+        [HttpGet("tickets-sold-by-org/{userId}")] [Authorize(Policy = AuthorizationRoles.BuyerOrAdmin)]
+        public async Task<IActionResult> GetTicketsSoldByOrganisation([FromRoute] string userId)
+        {
+            try
+            {
+                var (resTickets, errorMessage, errorType) = _ticketManager.GetTicketsSoldByOrganisation(userId);
+                if (resTickets != null)
+                {
+                    return Ok(resTickets);
+                }
+
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets sold. Error message: {errorMessage}")),
+                    ErrorTypes.NotFound => NotFound(),
+                    ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError),
+                };
+            }
+            catch (Exception e)
+            {
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the tickets sold by the organizer given. Error message: {e.Message}"));
+            }
+        }
+
         [HttpGet("event-tickets/{eventId}")]
         [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
         public async Task<IActionResult> GetEventTickets([FromRoute] string eventId)

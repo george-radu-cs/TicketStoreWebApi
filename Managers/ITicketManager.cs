@@ -20,6 +20,9 @@ namespace TicketStore.Managers
         (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetBuyerTicketsForAnEventResponse(
             string userId, string eventId);
 
+        (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetTicketsSoldByOrganisation(
+            string userId);
+
         (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetEventSoldTicketsResponse(
             string eventId);
 
