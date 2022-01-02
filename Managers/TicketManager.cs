@@ -93,6 +93,23 @@ namespace TicketStore.Managers
 
             return (resTickets: tickets, errorMessage: null, errorType: null);
         }
+        
+        public (List<TicketResponseModel> resTickets, string errorMessage, string errorType) GetTicketsSoldByOrganisation(
+            string userId)
+        {
+            var tickets = _ticketRepository.GetTicketsWithEventIQueryable()
+                .Where(t => t.Event.OrganizerId == userId)
+                .OrderByDescending(t => t.UpdatedAt)
+                .Select(t => ConvertToTicketResponseModelWithEvent(t))
+                .ToList();
+
+            if (tickets.IsNullOrEmpty())
+            {
+                return (resTickets: null, errorMessage: "Tickets not found", errorType: ErrorTypes.NotFound);
+            }
+
+            return (resTickets: tickets, errorMessage: null, errorType: null);
+        }
 
         public (List<TicketResponseModel> resTickets, string errorMessage, string errorType)
             GetEventSoldTicketsResponse(string eventId)
