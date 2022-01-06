@@ -8,11 +8,17 @@ namespace TicketStore.Managers
     public interface IReviewManager
     {
         Review GetReviewById(string userId, string eventId);
-        (ReviewResponseModel resReview, string errorMessage, string errorType) GetReviewResponseById(string userId, string eventId);
+
+        (ReviewResponseModel resReview, string errorMessage, string errorType) GetReviewResponseById(string userId,
+            string eventId);
+
         (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetReviewsResponse();
 
         (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetUserReviewsResponse(
             string userId);
+
+        (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetOrganizerReviewsResponse(
+            string organizerId);
 
         (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetEventReviewsResponse(
             string eventId);
