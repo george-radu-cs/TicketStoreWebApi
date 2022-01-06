@@ -48,7 +48,7 @@ namespace TicketStore.Managers
         public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetReviewsResponse()
         {
             var reviews = _reviewRepository.GetReviewsIQueryable()
-                .OrderByDescending(r=>r.UpdatedAt)
+                .OrderByDescending(r => r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModel(r))
                 .ToList();
 
@@ -70,8 +70,31 @@ namespace TicketStore.Managers
 
             var reviews = _reviewRepository.GetReviewsWithEventIQueryable()
                 .Where(r => r.UserId == userId)
-                .OrderByDescending(r=>r.UpdatedAt)
+                .OrderByDescending(r => r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModelWithEvent(r))
+                .ToList();
+
+            if (reviews.IsNullOrEmpty())
+            {
+                return (resReviews: null, errorMessage: "Reviews not found", errorType: ErrorTypes.NotFound);
+            }
+
+            return (resReviews: reviews, errorMessage: null, errorType: null);
+        }
+
+
+        public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType)
+            GetOrganizerReviewsResponse(string organizerId)
+        {
+            if (string.IsNullOrEmpty(organizerId))
+            {
+                return (resReviews: null, errorMessage: "The OrganizerId is required", errorType: ErrorTypes.UserFault);
+            }
+
+            var reviews = _reviewRepository.GetReviewsWithUserAndEventIQueryable()
+                .Where(r => r.Event.OrganizerId == organizerId)
+                .OrderByDescending(r => r.UpdatedAt)
+                .Select(r => ConvertToReviewResponseModelWithUserAndEvent(r))
                 .ToList();
 
             if (reviews.IsNullOrEmpty())
@@ -92,7 +115,7 @@ namespace TicketStore.Managers
 
             var reviews = _reviewRepository.GetReviewsWithUserIQueryable()
                 .Where(r => r.EventId == eventId)
-                .OrderByDescending(r=>r.UpdatedAt)
+                .OrderByDescending(r => r.UpdatedAt)
                 .Select(r => ConvertToReviewResponseModelWithUser(r))
                 .ToList();
 

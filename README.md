@@ -58,7 +58,7 @@ Basic features:
 - [x] enhance password encryption by adding some random key from .env
 - [x] add method to get the current user
 - [x] move the conversions from inputModels to EntityModel in utils
-- [ ] after UI modify endpoints to filter data
+- [x] after UI modify endpoints to filter data
 
 To be added after ALL basic features are done and have more time left
 

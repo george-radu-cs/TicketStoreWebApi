@@ -112,7 +112,7 @@ namespace TicketStore.Controllers
 
                 return errorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting review by id failed. Error message: {errorMessage}")),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting event's reviews failed. Error message: {errorMessage}")),
                     ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
                     _ => NotFound()
                 };
@@ -120,6 +120,31 @@ namespace TicketStore.Controllers
             catch (Exception e)
             {
                 return BadRequest(JsonConvert.SerializeObject($"Couldn't get the event's reviews. Error message: {e.Message}"));
+            }
+        }
+        
+        [HttpGet("organizer-reviews/{organizerId}")]
+        [Authorize(Policy = AuthorizationRoles.OrganizerOrAdmin)]
+        public async Task<IActionResult> GetOrganizerReviews([FromRoute] string organizerId)
+        {
+            try
+            {
+                var (resReviews, errorMessage, errorType) = _reviewManager.GetOrganizerReviewsResponse(organizerId);
+                if (resReviews != null)
+                {
+                    return Ok(resReviews);
+                }
+
+                return errorType switch
+                {
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Getting organizer's reviews failed. Error message: {errorMessage}")),
+                    ErrorTypes.ServerFault => StatusCode(StatusCodes.Status500InternalServerError),
+                    _ => NotFound()
+                };
+            }
+            catch (Exception e)
+            {
+                return BadRequest(JsonConvert.SerializeObject($"Couldn't get the organizer's reviews. Error message: {e.Message}"));
             }
         }
 
