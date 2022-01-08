@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using TicketStore.Entities;
@@ -29,46 +28,50 @@ namespace TicketStore.Managers
             return resEvent;
         }
 
-        public (EventResponseModel resEvent, string errorMessage, string errorType)
-            GetEventResponseById(string id)
+        public ResponseRecordWithErrors<EventResponseModel> GetEventResponseById(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return (resEvent: null, errorMessage: "The Event's Id is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<EventResponseModel>(null, "The Event's Id is required",
+                    ErrorTypes.UserFault);
             }
 
             var responseEvent = GetEventById(id);
             if (responseEvent == null)
             {
-                return (resEvent: null, errorMessage: "Event not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordWithErrors<EventResponseModel>(null, "Event not found", ErrorTypes.NotFound);
             }
 
-            return (resEvent: ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(responseEvent),
-                errorMessage: null, errorType: null);
+            return new ResponseRecordWithErrors<EventResponseModel>(
+                ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(responseEvent), null, null);
         }
 
-        public (List<EventResponseModel> resEvents, string errorMessage, string errorType) GetEvents()
+        // public (List<EventResponseModel> resEvents, string errorMessage, string errorType)
+        public ResponseRecordsListWithErrors<EventResponseModel> GetEvents(FilterEventsOptions filterEventsOptions)
         {
             // we want a list with events with their organizer
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
                 .OrderByDescending(e => e.UpdatedAt)
+                .Skip(filterEventsOptions.Offset)
+                .Take(filterEventsOptions.Limit)
                 .Select(e => ConvertToEventResponseModelWithLocationAndTicketTypesAndOrganizerAndGuests(e))
                 .ToList();
 
             if (events.IsNullOrEmpty())
             {
-                return (resEvents: null, errorMessage: "Events not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<EventResponseModel>(null, "Events not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resEvents: events, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<EventResponseModel>(events, null, null);
         }
 
-        public (List<EventResponseModel> resEvents, string errorMessage, string errorType)
-            GetOrganizerEvents(string organizerId)
+        public ResponseRecordsListWithErrors<EventResponseModel> GetOrganizerEvents(string organizerId)
         {
             if (string.IsNullOrEmpty(organizerId))
             {
-                return (resEvents: null, errorMessage: "Organizer Id is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordsListWithErrors<EventResponseModel>(null, "Organizer Id is required",
+                    ErrorTypes.UserFault);
             }
 
             var events = _eventRepository.GetEventsWithAllDataIQueryable()
@@ -79,38 +82,39 @@ namespace TicketStore.Managers
 
             if (events.IsNullOrEmpty())
             {
-                return (resEvents: null, errorMessage: "Events not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<EventResponseModel>(null, "Events not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resEvents: events, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<EventResponseModel>(events, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Create(EventModel model)
+        public ResponseSuccessWithErrors Create(EventModel model)
         {
             // check if input data is valid
             var (isValid, validationErrorMessage) = Validations.ValidateEvent(model);
             if (!isValid)
             {
-                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, validationErrorMessage, ErrorTypes.UserFault);
             }
 
             var newEvent = EntityConversions.ConvertToEventEntity(model);
             _eventRepository.Create(newEvent);
-            return (success: true, errorMessage: null, errorType: null);
+            return  new ResponseSuccessWithErrors(true, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Update(EventModel model)
+        public ResponseSuccessWithErrors Update(EventModel model)
         {
             var (isValid, validationErrorMessage) = Validations.ValidateEvent(model, true);
             if (!isValid)
             {
-                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, validationErrorMessage, ErrorTypes.UserFault);
             }
 
             var eventToUpdate = GetEventById(model.Id);
             if (eventToUpdate == null)
             {
-                return (success: false, errorMessage: "The Event doesn't exists.", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, "The Event doesn't exists.", ErrorTypes.UserFault);
             }
 
             // get the list of old guests to remove later
@@ -119,24 +123,24 @@ namespace TicketStore.Managers
             var updatedEvent = EntityConversions.ConvertToEventEntity(model, true, eventToUpdate);
 
             _eventRepository.Update(updatedEvent, oldGuests);
-            return (success: true, errorMessage: null, errorType: null);
+            return new ResponseSuccessWithErrors(true, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Delete(string id)
+        public ResponseSuccessWithErrors Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
             {
-                return (success: false, errorMessage: "Event Id is required", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, "Event Id is required", ErrorTypes.UserFault);
             }
 
             var eventToDelete = GetEventById(id);
             if (eventToDelete == null)
             {
-                return (success: false, errorMessage: "Event doesn't exists", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors( false, "Event doesn't exists", ErrorTypes.UserFault);
             }
 
             _eventRepository.Delete(eventToDelete);
-            return (success: true, errorMessage: null, errorType: null);
+            return new ResponseSuccessWithErrors(true, null, null);
         }
     }
 }

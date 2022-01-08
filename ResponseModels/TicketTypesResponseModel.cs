@@ -1,5 +1,3 @@
-using System;
-
 namespace TicketStore.ResponseModels
 {
     public class TicketTypesResponseModel

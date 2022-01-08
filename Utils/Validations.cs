@@ -1,7 +1,7 @@
-using System;
 using System.Text.RegularExpressions;
 using Castle.Core.Internal;
 using TicketStore.Models;
+using TicketStore.Services;
 
 namespace TicketStore.Utils
 {
@@ -13,6 +13,7 @@ namespace TicketStore.Utils
         private static readonly Regex RatingRegex = new(@"^[0-9](\.[0-9]{1,2})?$");
         private static readonly Regex PositiveIntegerRegex = new(@"^[0-9]*$");
         private static readonly Regex PositiveFloatRegex = new(@"^[^\-][0-9]*.?[0-9]{1,2}$");
+        private static readonly IDateTimeProvider DateTimeProvider = new DateTimeProvider();
 
         public static (bool isValid, string errorMessage) ValidateRegister(SignUpUserModel userToValidate)
         {
@@ -324,7 +325,7 @@ namespace TicketStore.Utils
                 return (isValid: false, errorMessage: "The Description is required");
             }
 
-            if (eventToValidate.StartDate < DateTime.Now)
+            if (eventToValidate.StartDate.ToUniversalTime() < DateTimeProvider.DateTimeNow)
             {
                 return (isValid: false, errorMessage: "The StartDate cannot be in the past");
             }

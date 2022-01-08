@@ -36,13 +36,13 @@ namespace TicketStore.Managers
             return (passEnhancerBefore, passEnhancerAfter, true);
         }
 
-        public async Task<(bool success, string errorMessage, string errorType)> SignUp(SignUpUserModel signUpUserModel)
+        public async Task<ResponseSuccessWithErrors> SignUp(SignUpUserModel signUpUserModel)
         {
             // check if the input data is valid
             var (isValid, validationErrorMessage) = Validations.ValidateRegister(signUpUserModel);
             if (!isValid)
             {
-                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, validationErrorMessage, ErrorTypes.UserFault);
             }
 
             // create the model to save in database
@@ -52,8 +52,8 @@ namespace TicketStore.Managers
             var (passEnhancerBefore, passEnhancerAfter, isPassValid) = GetPasswordEnhancers().Result;
             if (!isPassValid) // there was a problem while getting the password enhancers => stop the signup process
             {
-                return (success: false, errorMessage: "Server error: Couldn't compute the password",
-                    errorType: ErrorTypes.ServerFault);
+                return new ResponseSuccessWithErrors(false, "Server error: Couldn't compute the password",
+                    ErrorTypes.ServerFault);
             }
 
             // try to create the user in the db
@@ -61,7 +61,7 @@ namespace TicketStore.Managers
                 passEnhancerBefore + signUpUserModel.Password + passEnhancerAfter);
             if (!result.Succeeded)
             {
-                return (success: false, errorMessage: "Couldn't create the user", errorType: ErrorTypes.ServerFault);
+                return new ResponseSuccessWithErrors(false, "Couldn't create the user", ErrorTypes.ServerFault);
             }
 
             // add the user role for the user; in case of failure delete the user from the db
@@ -73,7 +73,7 @@ namespace TicketStore.Managers
                     var toDeleteUser = await _userManager.FindByEmailAsync(user.Email);
                     await _userManager.DeleteAsync(toDeleteUser);
 
-                    return (success: false, errorMessage: "Couldn't create the user", errorType: ErrorTypes.ServerFault);
+                    return new ResponseSuccessWithErrors(false, "Couldn't create the user", ErrorTypes.ServerFault);
                 }
             }
             catch (Exception e)
@@ -84,31 +84,33 @@ namespace TicketStore.Managers
             }
 
             // the user was created successfully
-            return (success: true, errorMessage: "", errorType: "");
+            return new ResponseSuccessWithErrors(true, "", "");
         }
 
-        public async Task<(TokenModel token, string errorMessage, string errorType)> Login(
+        public async Task<ResponseRecordWithErrors<TokenModel>> Login(
             LoginUserModel loginUserModel)
         {
             // check if the input data is valid
             var (isValid, validateErrorMessage) = Validations.ValidateLogin(loginUserModel);
             if (!isValid)
             {
-                return (token: null, errorMessage: validateErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<TokenModel>(null, validateErrorMessage, ErrorTypes.UserFault);
             }
 
             // check if the user exists - find by normalized email
             var user = await _userManager.FindByEmailAsync(loginUserModel.Email);
             if (user == null)
             {
-                return (token: null, errorMessage: "Error: User doesn't exists.", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<TokenModel>(null, "Error: User doesn't exists.",
+                    ErrorTypes.UserFault);
             }
 
             // get from env the password enhancers to check the password
             var (passEnhancerBefore, passEnhancerAfter, isPassValid) = GetPasswordEnhancers().Result;
             if (!isPassValid)
             {
-                return (token: null, errorMessage: "Error: Couldn't verify the user password.", errorType: ErrorTypes.ServerFault);
+                return new ResponseRecordWithErrors<TokenModel>(null, "Error: Couldn't verify the user password.",
+                    ErrorTypes.ServerFault);
             }
 
             // verify the password 
@@ -116,25 +118,29 @@ namespace TicketStore.Managers
                 passEnhancerBefore + loginUserModel.Password + passEnhancerAfter, false);
             if (!result.Succeeded)
             {
-                return (token: null, errorMessage: "Error: Passwords doesn't match.", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<TokenModel>(null, "Error: Passwords doesn't match.",
+                    ErrorTypes.UserFault);
             }
 
             // create jwt token for user
             var token = await _tokenManager.CreateToken(user);
             return token == null
-                ? (token: null, errorMessage: "Error: Couldn't create the jwt token.", errorType: ErrorTypes.ServerFault)
-                : (token: new TokenModel { Token = token }, errorMessage: "", errorType: "");
+                ? new ResponseRecordWithErrors<TokenModel>(null, "Error: Couldn't create the jwt token.",
+                    ErrorTypes.ServerFault)
+                : new ResponseRecordWithErrors<TokenModel>(new TokenModel { Token = token }, "", "");
         }
 
-        public async Task<(UserResponseModel user, string errorMessage, string errorType)> GetUser(string userEmail)
+        public async Task<ResponseRecordWithErrors<UserResponseModel>> GetUser(string userEmail)
         {
             var user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
-                return (user: null, errorMessage: "Error: User doesn't exists.", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<UserResponseModel>(null, "Error: User doesn't exists.",
+                    ErrorTypes.UserFault);
             }
-            
-            return (user: ResponseConversions.ConvertToUserResponseModel(user), errorMessage: null, errorType: null);
+
+            return new ResponseRecordWithErrors<UserResponseModel>(ResponseConversions.ConvertToUserResponseModel(user),
+                null, null);
         }
     }
 }
