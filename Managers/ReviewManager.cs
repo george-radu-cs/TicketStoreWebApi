@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using TicketStore.Entities;
@@ -27,25 +26,26 @@ namespace TicketStore.Managers
             return review;
         }
 
-        public (ReviewResponseModel resReview, string errorMessage, string errorType) GetReviewResponseById(
+        public ResponseRecordWithErrors<ReviewResponseModel> GetReviewResponseById(
             string userId, string eventId)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
-                return (resReview: null, errorMessage: "The Review's Id is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordWithErrors<ReviewResponseModel>(null, "The Review's Id is required",
+                    ErrorTypes.UserFault);
             }
 
             var review = GetReviewById(userId, eventId);
             if (review == null)
             {
-                return (resReview: null, errorMessage: "Review not found", ErrorTypes.NotFound);
+                return new ResponseRecordWithErrors<ReviewResponseModel>(null, "Review not found", ErrorTypes.NotFound);
             }
 
-            return (resReview: ConvertToReviewResponseModelWithUserAndEvent(review), errorMessage: null,
-                errorType: null);
+            return new ResponseRecordWithErrors<ReviewResponseModel>(
+                ConvertToReviewResponseModelWithUserAndEvent(review), null, null);
         }
 
-        public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetReviewsResponse()
+        public ResponseRecordsListWithErrors<ReviewResponseModel> GetReviewsResponse()
         {
             var reviews = _reviewRepository.GetReviewsIQueryable()
                 .OrderByDescending(r => r.UpdatedAt)
@@ -54,18 +54,20 @@ namespace TicketStore.Managers
 
             if (reviews.IsNullOrEmpty())
             {
-                return (resReviews: null, errorMessage: "Reviews not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "Reviews not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resReviews: reviews, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<ReviewResponseModel>(reviews, null, null);
         }
 
-        public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetUserReviewsResponse(
+        public ResponseRecordsListWithErrors<ReviewResponseModel> GetUserReviewsResponse(
             string userId)
         {
             if (string.IsNullOrEmpty(userId))
             {
-                return (resReviews: null, errorMessage: "The UserId is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "The UserId is required",
+                    ErrorTypes.UserFault);
             }
 
             var reviews = _reviewRepository.GetReviewsWithEventIQueryable()
@@ -76,19 +78,20 @@ namespace TicketStore.Managers
 
             if (reviews.IsNullOrEmpty())
             {
-                return (resReviews: null, errorMessage: "Reviews not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "Reviews not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resReviews: reviews, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<ReviewResponseModel>(reviews, null, null);
         }
 
 
-        public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType)
-            GetOrganizerReviewsResponse(string organizerId)
+        public ResponseRecordsListWithErrors<ReviewResponseModel> GetOrganizerReviewsResponse(string organizerId)
         {
             if (string.IsNullOrEmpty(organizerId))
             {
-                return (resReviews: null, errorMessage: "The OrganizerId is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "The OrganizerId is required",
+                    ErrorTypes.UserFault);
             }
 
             var reviews = _reviewRepository.GetReviewsWithUserAndEventIQueryable()
@@ -99,18 +102,19 @@ namespace TicketStore.Managers
 
             if (reviews.IsNullOrEmpty())
             {
-                return (resReviews: null, errorMessage: "Reviews not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "Reviews not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resReviews: reviews, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<ReviewResponseModel>(reviews, null, null);
         }
 
-        public (List<ReviewResponseModel> resReviews, string errorMessage, string errorType) GetEventReviewsResponse(
-            string eventId)
+        public ResponseRecordsListWithErrors<ReviewResponseModel> GetEventReviewsResponse(string eventId)
         {
             if (string.IsNullOrEmpty(eventId))
             {
-                return (resReviews: null, errorMessage: "The EventId is required", errorType: ErrorTypes.UserFault);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "The EventId is required",
+                    ErrorTypes.UserFault);
             }
 
             var reviews = _reviewRepository.GetReviewsWithUserIQueryable()
@@ -121,59 +125,60 @@ namespace TicketStore.Managers
 
             if (reviews.IsNullOrEmpty())
             {
-                return (resReviews: null, errorMessage: "Reviews not found", errorType: ErrorTypes.NotFound);
+                return new ResponseRecordsListWithErrors<ReviewResponseModel>(null, "Reviews not found",
+                    ErrorTypes.NotFound);
             }
 
-            return (resReviews: reviews, errorMessage: null, errorType: null);
+            return new ResponseRecordsListWithErrors<ReviewResponseModel>(reviews, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Create(ReviewModel model)
+        public ResponseSuccessWithErrors Create(ReviewModel model)
         {
             var (isValid, validationErrorMessage) = Validations.ValidateReview(model);
             if (!isValid)
             {
-                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, validationErrorMessage, ErrorTypes.UserFault);
             }
 
             var newReview = EntityConversions.ConvertToReviewEntity(model);
             _reviewRepository.Create(newReview);
-            return (success: true, errorMessage: null, errorType: null);
+            return new ResponseSuccessWithErrors(true, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Update(ReviewModel model)
+        public ResponseSuccessWithErrors Update(ReviewModel model)
         {
             var (isValid, validationErrorMessage) = Validations.ValidateReview(model, true);
             if (!isValid)
             {
-                return (success: false, errorMessage: validationErrorMessage, errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, validationErrorMessage, ErrorTypes.UserFault);
             }
 
             var reviewToUpdate = GetReviewById(model.UserId, model.EventId);
             if (reviewToUpdate == null)
             {
-                return (success: false, errorMessage: "The Review doesn't exists", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, "The Review doesn't exists", ErrorTypes.UserFault);
             }
 
             var updatedReview = EntityConversions.ConvertToReviewEntity(model, true, reviewToUpdate);
             _reviewRepository.Update(updatedReview);
-            return (success: true, errorMessage: null, errorType: null);
+            return new ResponseSuccessWithErrors(true, null, null);
         }
 
-        public (bool success, string errorMessage, string errorType) Delete(string userId, string eventId)
+        public ResponseSuccessWithErrors Delete(string userId, string eventId)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(eventId))
             {
-                return (success: false, errorMessage: "Review Id is required", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, "Review Id is required", ErrorTypes.UserFault);
             }
 
             var reviewToDelete = GetReviewById(userId, eventId);
             if (reviewToDelete == null)
             {
-                return (success: false, errorMessage: "Review doesn't exists", errorType: ErrorTypes.UserFault);
+                return new ResponseSuccessWithErrors(false, "Review doesn't exists", ErrorTypes.UserFault);
             }
 
             _reviewRepository.Delete(reviewToDelete);
-            return (success: true, errorMessage: null, errorType: null);
+            return new ResponseSuccessWithErrors(true, null, null);
         }
     }
 }

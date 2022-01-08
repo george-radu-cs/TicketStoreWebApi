@@ -6,8 +6,8 @@ namespace TicketStore.Managers
 {
     public interface IAuthenticationManager
     {
-        Task<(bool success, string errorMessage, string errorType)> SignUp(SignUpUserModel signUpUserModel);
-        Task<(TokenModel token, string errorMessage, string errorType)> Login(LoginUserModel loginUserModel);
-        Task<(UserResponseModel user, string errorMessage, string errorType)> GetUser(string userEmail);
+        Task<ResponseSuccessWithErrors> SignUp(SignUpUserModel signUpUserModel);
+        Task<ResponseRecordWithErrors<TokenModel>> Login(LoginUserModel loginUserModel);
+        Task<ResponseRecordWithErrors<UserResponseModel>> GetUser(string userEmail);
     }
 }

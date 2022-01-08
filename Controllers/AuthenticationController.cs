@@ -29,15 +29,15 @@ namespace TicketStore.Controllers
         {
             try
             {
-                var (success, errorMessage, errorType) = await _authenticationManager.SignUp(model);
-                if (success) // the user was created successfully
+                var response = await _authenticationManager.SignUp(model);
+                if (response.Success) // the user was created successfully
                 {
                     return Created("success", JsonConvert.SerializeObject("User created successfully"));
                 }
 
-                return errorType switch
+                return response.ErrorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"SignUp failed. Error message: {errorMessage}")),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"SignUp failed. Error message: {response.ErrorMessage}")),
                     // for any other errors return 500 
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
@@ -54,15 +54,15 @@ namespace TicketStore.Controllers
             try
             {
                 // try to login the user and send back the user's token
-                var (token, errorMessage, errorType) = await _authenticationManager.Login(model);
-                if (token != null)
+                var response = await _authenticationManager.Login(model);
+                if (response.Record != null)
                 {
-                    return Ok(token);
+                    return Ok(response.Record);
                 }
 
-                return errorType switch
+                return response.ErrorType switch
                 {
-                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Login failed. Error message: {errorMessage}")),
+                    ErrorTypes.UserFault => BadRequest(JsonConvert.SerializeObject($"Login failed. Error message: {response.ErrorMessage}")),
                     // for any other errors return 500
                     ErrorTypes.ServerFault or _ => StatusCode(StatusCodes.Status500InternalServerError)
                 };
@@ -92,16 +92,16 @@ namespace TicketStore.Controllers
                 }
 
                 // get the current user info
-                var (user, errorMessage, errorType) = await _authenticationManager.GetUser(emailAddressClaim.Value);
+                var response = await _authenticationManager.GetUser(emailAddressClaim.Value);
 
-                if (user != null)
+                if (response.Record != null)
                 {
-                    return Ok(user);
+                    return Ok(response.Record);
                 }
 
-                return errorType switch
+                return response.ErrorType switch
                 {
-                    "USER" => BadRequest(JsonConvert.SerializeObject($"Couldn't get the current user info. Error message: {errorMessage}")),
+                    "USER" => BadRequest(JsonConvert.SerializeObject($"Couldn't get the current user info. Error message: {response.ErrorMessage}")),
                     "SERVER" or _ => StatusCode(StatusCodes.Status500InternalServerError),
                 };
             }

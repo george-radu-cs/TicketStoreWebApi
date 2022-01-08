@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using TicketStore.Entities;
 using TicketStore.Models;
+using TicketStore.Services;
 
 namespace TicketStore.Utils
 {
     public static class EntityConversions
     {
+        private static readonly IDateTimeProvider DateTimeProvider = new DateTimeProvider();
+        
         // in this convert methods we set the default parameters: isEdit to false and oldEntity to null to keep the call
         // of the methods nice when converting a new entity. Instructions to call these methods to be sure no exception
         // is thrown:
@@ -17,7 +20,7 @@ namespace TicketStore.Utils
 
         public static User ConvertToUserEntity(SignUpUserModel userToConvert)
         {
-            var date = DateTime.Now.ToUniversalTime();
+            var date = DateTimeProvider.DateTimeNow;
             return new User
             {
                 FirstName = userToConvert.FirstName,
@@ -110,7 +113,7 @@ namespace TicketStore.Utils
         // will be raised, by default isEdit will be false and oldEvent will be null
         public static Event ConvertToEventEntity(EventModel eventToConvert, bool isEdit = false, Event oldEvent = null)
         {
-            var date = DateTime.Now.ToUniversalTime();
+            var date = DateTimeProvider.DateTimeNow;
 
             // initialize the response event with old event
             var resEvent = oldEvent;
@@ -145,7 +148,7 @@ namespace TicketStore.Utils
         public static Review ConvertToReviewEntity(ReviewModel reviewToConvert, bool isEdit = false,
             Review oldReview = null)
         {
-            var date = DateTime.Now.ToUniversalTime();
+            var date = DateTimeProvider.DateTimeNow;
             var resReview = oldReview;
             if (!isEdit)
             {
@@ -170,7 +173,7 @@ namespace TicketStore.Utils
         public static Ticket ConvertToTicketEntity(TicketModel ticketToConvert, bool isEdit = false,
             Ticket oldTicket = null)
         {
-            var date = DateTime.Now.ToUniversalTime();
+            var date = DateTimeProvider.DateTimeNow;
             var resTicket = oldTicket;
             if (!isEdit)
             {
